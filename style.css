@@ -56,8 +56,16 @@ header nav{
     background-color: #3c7bf1;
 }
 
+#search-button:hover{
+    background-color: #306fe6;
+}
+
 #fav-button{
     background-color: #465468;
+}
+
+#fav-button:hover{
+    background-color: #445164;
 }
 
 .buttons a{
