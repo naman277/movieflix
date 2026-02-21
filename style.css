@@ -133,6 +133,12 @@ header nav{
 
 /* 768px to 1024px */
 @media (min-width :768px) {
+
+    header h1{
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
     .movie-card{
         width: 48%;
     }
