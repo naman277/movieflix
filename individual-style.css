@@ -1,0 +1,21 @@
+.movie-page{
+    color: aliceblue;  /* change the text colors later when layout is done */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.movie-page img{
+    width: 80%;
+}
+
+.movie-overview{
+    text-align: center;
+}
+
+.plot-text{
+    margin-top: 0px;
+    padding-left: 16px;
+    padding-right: 16px;
+    text-align: justify;
+}
