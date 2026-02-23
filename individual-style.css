@@ -67,7 +67,16 @@
     }
 
     .movie-page img{
-        width: 20%;
+        width: 15%;
+    }
+    .movie-overview h2{
+        font-size: 3rem;
+    }
+    .movie-overview p{
+        font-size: larger;
+    }
+    .plot-text{
+        font-size: larger;
     }
 
 }
