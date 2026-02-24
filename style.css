@@ -124,7 +124,7 @@ header nav{
     font-size: 1rem;
 }
 
-.plot{
+.card-plot{
     visibility: visible;
 }
 
@@ -220,12 +220,12 @@ header nav{
     font-size:medium;
 
     }
-    .plot{
+    .card-plot{
     visibility: hidden;
 }
 
     .movie-tiles-field{
-        justify-content: flex-start;
+        justify-content: center;
         gap:1.5rem;
     }
 }

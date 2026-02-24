@@ -860,26 +860,19 @@ function createSection(){
     header.insertAdjacentElement('afterend',br);
     return section;
 }
-/* <div onclick="window.location.href='moviepage.html'" style="cursor: pointer;" class="movie-card">
-            <img class="poster" src="https://m.media-amazon.com/images/M/MV5BNWE5MGI3MDctMmU5Ni00YzI2LWEzMTQtZGIyZDA5MzQzNDBhXkEyXkFqcGc@._V1_SX300.jpg" alt="Gotg">
-            <div class="movie-details">
-                <h2>Movie Title Here</h2>
-                <p>2024 -⭐8.0</p>
-                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iste, magni!</p>
-            </div>
-        </div> */
+
 function addMovieCard(movie){
     const movieCard = document.createElement('div');
     movieCard.classList.add('movie-card');
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){
-        window.location.href='moviepage.html';
+        window.location.href=`moviepage.html?movieID=${movie.imdbID}`;
     })
     movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p>${movie.Year} -⭐${movie.Rated}</p>
-                <p class='plot'>${movie.Plot}</p>
+                <p>${movie.Year} -⭐${movie.imdbRating}</p>
+                <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     return movieCard;
     
@@ -887,8 +880,6 @@ function addMovieCard(movie){
 
 setTimeout(() => {
     const movieField=createSection();
-    // const movieCard=addMovieCard();
-    // movieField.appendChild(movieCard);
 
     movieapi.data.forEach(function(movie){
         const movieCard = addMovieCard(movie);
@@ -900,3 +891,4 @@ setTimeout(() => {
 movieapi.data.forEach(function(movie){
     console.log(movie.Title);
 })
+
