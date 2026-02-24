@@ -67,7 +67,8 @@
     }
 
     .movie-page img{
-        width: 22%;
+        min-width: 22%;
+        max-width: 30%;
     }
     .movie-overview h2{
         font-size: 4rem;
