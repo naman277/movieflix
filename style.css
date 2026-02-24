@@ -229,3 +229,10 @@ header nav{
         gap:1.5rem;
     }
 }
+
+
+@media (max-width:768px){
+    .mobile-hide{
+        display:none;
+    }
+}

@@ -875,7 +875,6 @@ function addMovieCard(movie){
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     return movieCard;
-    
 }
 
 setTimeout(() => {
@@ -891,4 +890,5 @@ setTimeout(() => {
 movieapi.data.forEach(function(movie){
     console.log(movie.Title);
 })
+
 
