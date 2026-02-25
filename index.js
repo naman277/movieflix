@@ -862,8 +862,7 @@ function addMovieCard(movie){
 
 function loadHomePage(){
     setTimeout(function(){
-        const load = document.getElementById("spinner");
-        load.remove();
+        removeLoader();
         console.log("ye loadHomePage function chal gaya bidhu");
         const movieField=createSection();
 
@@ -882,8 +881,7 @@ async function loadMoviePage(id) {
 }
 
 function LoadIndivualMovie(individualMovie){
-    const loader = document.getElementById('spinner');
-    loader.remove();
+    removeLoader();
     const section = document.createElement('section');
     section.classList.add("movie-page");
     const br = document.createElement('br');
@@ -918,8 +916,7 @@ async function loadSearchResults(name) {
 }
 
 function loadSearchResultsPage(movieList){
-    const load = document.getElementById("spinner");
-    load.remove();
+    removeLoader();
     console.log("ye loadSearchResultsPage function chal gaya bidhu");
     const movieField=createSection();
     movieList.Search.forEach((movie) => {
@@ -929,9 +926,13 @@ function loadSearchResultsPage(movieList){
 }
 
 function loadNoResultPage(){
-  const load = document.getElementById("spinner");
-  load.remove();
+  removeLoader();
   console.log("ye loadNoResultPage function chal gaya bidhu");
   const movieField=createSection();
   movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
+}
+
+function removeLoader(){
+  const load = document.getElementById("spinner");
+  load.remove();
 }
