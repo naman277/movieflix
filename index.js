@@ -804,8 +804,7 @@ const movieapi = {
 ]
 }
 
-const searchButton = document.getElementById('search-button');
-searchButton.style.cursor="pointer";
+
 function searchMovie(){
     const inputField = document.getElementById("search");
     let name = inputField.value;

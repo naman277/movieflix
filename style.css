@@ -74,6 +74,8 @@ header nav{
    text-decoration: none;
    font-weight: bolder;
    border-radius: 10px;
+   border: none;
+   cursor: pointer;
 }
 
 .movie-tiles-field{
