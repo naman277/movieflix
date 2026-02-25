@@ -804,6 +804,23 @@ const movieapi = {
 ]
 }
 
+let inputField = document.getElementById("search");
+let searchbutton = document.getElementById('search-button');
+setInterval(function(){
+  let searchname = inputField.value;
+  if(searchname === ""){
+  searchbutton.disabled = true;
+}
+else{
+  searchbutton.disabled = false;
+}},500);
+
+inputField.addEventListener('keypress',(event)=>{
+  if(event.key=== "Enter"){
+    event.preventDefault();
+    searchbutton.click();
+  }
+});
 
 function searchMovie(){
     const inputField = document.getElementById("search");
@@ -820,7 +837,6 @@ document.addEventListener("DOMContentLoaded",() => {
     const id = params.get('movieID');
     let name = params.get('query');
   
-
     if(id){
         loadMoviePage(id);
     }
