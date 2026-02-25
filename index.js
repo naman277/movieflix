@@ -859,19 +859,28 @@ function createSection(){
     return section;
 }
 
-function addMovieCard(movie){
+function addMovieCard(movie,searched){
     const movieCard = document.createElement('div');
     movieCard.classList.add('movie-card');
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){
         window.location.href=`index.html?movieID=${movie.imdbID}`;
     })
-    movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
+    if(searched){
+      movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p>${movie.Year}</p>
+            </div>`;
+    }
+    else{
+    movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
+            <div class="movie-details">
+                <h2>${movie.Title}</h2>
+                <p>${movie.Year} - ⭐${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
+    }
     return movieCard;
 }
 
@@ -882,7 +891,7 @@ function loadHomePage(){
         const movieField=createSection();
 
         movieapi.data.forEach(function(movie){
-            const movieCard = addMovieCard(movie);
+            const movieCard = addMovieCard(movie,false);
             movieField.appendChild(movieCard);
         })
     },2000)
@@ -937,7 +946,7 @@ function loadSearchResultsPage(movieList){
     console.log("ye loadSearchResultsPage function chal gaya bidhu");
     const movieField=createSection();
     movieList.Search.forEach((movie) => {
-        const movieCard = addMovieCard(movie);
+        const movieCard = addMovieCard(movie,true);
         movieField.appendChild(movieCard);
     })
 }
