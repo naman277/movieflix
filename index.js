@@ -869,8 +869,9 @@ function addMovieCard(movie,searched){
     if(searched){
       movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
             <div class="movie-details">
-                <h2>${movie.Title}</h2>
-                <p>${movie.Year}</p>
+                <h2>${movie.Title}</h2> <br class="mobile-show">
+                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>
+                
             </div>`;
     }
     else{

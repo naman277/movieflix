@@ -116,6 +116,10 @@ header nav{
     padding-right: 3px;
 }
 
+.mobile-show{
+        display: none;
+    }
+
 .movie-details h2{
     font-size: 1.5rem;
     color: white;
@@ -138,6 +142,11 @@ header nav{
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+h2.searched-movie-details{
+    color: #78869a;
+    padding-top: 5px;
 }
 
 .movie-page{
@@ -319,6 +328,9 @@ header nav{
 @media (max-width:768px){
     .mobile-hide{
         display:none;
+    }
+    .mobile-show{
+        display: block;
     }
 }
 
