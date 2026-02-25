@@ -333,3 +333,17 @@ section.spinner{
     align-items: center;
     height: 94vh;
 }
+
+.no-movie-found{
+    color: aliceblue;
+    font-size: 4rem;
+    text-align: center;
+}
+
+.no-movie-div{
+    height: 70vh;
+    display: flex;
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+}

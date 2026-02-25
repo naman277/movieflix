@@ -808,19 +808,25 @@ const searchButton = document.getElementById('search-button');
 searchButton.style.cursor="pointer";
 function searchMovie(){
     const inputField = document.getElementById("search");
-    const inputName = inputField.value;
-    window.location.href = `index.html?query=${inputName}`;
+    let name = inputField.value;
+    name = name.trimStart();
+    name = name.replace(/\s+/g, ' ').trim();
+    name = name.replace(/\s+/g, '%20');
+    console.log(name);
+    window.location.href = `index.html?query=${name}`;
 }
 
 document.addEventListener("DOMContentLoaded",() => {
     const params = new URLSearchParams(document.location.search);
     const id = params.get('movieID');
-    const name = params.get('query');
+    let name = params.get('query');
+  
 
     if(id){
         loadMoviePage(id);
     }
     else if(name){
+        
         loadSearchResults(name);
     }
     else{
@@ -901,9 +907,14 @@ function LoadIndivualMovie(individualMovie){
 }
 
 async function loadSearchResults(name) {
+  console.log(name);
     let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); //handle spaces in name
     let movieList = await Movie.json();
-    loadSearchResultsPage(movieList);
+    let result = movieList.Response.toLowerCase();
+    result = result === 'true'
+    console.log("The movie was found? ",result);
+    if(result) loadSearchResultsPage(movieList);
+    else loadNoResultPage();
 }
 
 function loadSearchResultsPage(movieList){
@@ -915,4 +926,12 @@ function loadSearchResultsPage(movieList){
         const movieCard = addMovieCard(movie);
         movieField.appendChild(movieCard);
     })
+}
+
+function loadNoResultPage(){
+  const load = document.getElementById("spinner");
+  load.remove();
+  console.log("ye loadNoResultPage function chal gaya bidhu");
+  const movieField=createSection();
+  movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
 }
