@@ -881,6 +881,7 @@ async function loadMoviePage(id) {
 
 function LoadIndivualMovie(individualMovie){
     removeLoader();
+    document.title = `${individualMovie.Title} - Movieflix`
     const section = document.createElement('section');
     section.classList.add("movie-page");
     const br = document.createElement('br');
@@ -904,8 +905,9 @@ function LoadIndivualMovie(individualMovie){
 }
 
 async function loadSearchResults(name) {
-  console.log(name);
-    let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); //handle spaces in name
+    console.log(name);
+    document.title = `${name} - Reasults`;
+    let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); 
     let movieList = await Movie.json();
     let result = movieList.Response.toLowerCase();
     result = result === 'true'
@@ -925,6 +927,7 @@ function loadSearchResultsPage(movieList){
 }
 
 function loadNoResultPage(){
+  document.title="No Results Found - Movieflix"
   removeLoader();
   console.log("ye loadNoResultPage function chal gaya bidhu");
   const movieField=createSection();
