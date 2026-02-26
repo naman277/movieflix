@@ -822,6 +822,7 @@ inputField.addEventListener('keypress',(event)=>{
   }
 });
 
+
 function searchMovie(){
     const inputField = document.getElementById("search");
     let name = inputField.value;
@@ -865,6 +866,13 @@ function addMovieCard(movie,searched){
     movieCard.addEventListener('click', function(){
         window.location.href=`index.html?movieID=${movie.imdbID}`;
     })
+    movieCard.addEventListener('keypress',(event) =>{
+      if(event.key==="Enter"){
+        event.preventDefault();
+        movieCard.click();
+      }
+    })
+    movieCard.tabIndex=0;
     if(searched){
       movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}"> </div>
             <div class="movie-details">

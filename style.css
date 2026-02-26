@@ -58,6 +58,11 @@ header nav{
     background-color: #395790;
 }
 
+#search-button:disabled{
+    background-color: #3c7bf1;
+    cursor: not-allowed;
+}
+
 #fav-button{
     background-color: #465468;
 }
@@ -109,6 +114,13 @@ header nav{
     box-shadow: 0 0 20px 10px #3f4e67, 0 0 40px 15px #3f4e67; 
     transition: 
     box-shadow 0s ease-in, color 0s ease-in;
+}
+
+.movie-card:focus{
+    box-shadow: 0 0 20px 10px #3f4e67, 0 0 40px 15px #3f4e67; 
+    transition: 
+    box-shadow 0s ease-in, color 0s ease-in;
+    outline: none;
 }
 
 .image-container{
