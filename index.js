@@ -830,7 +830,7 @@ function searchMovie(){
     name = name.replace(/\s+/g, ' ').trim();
     name = name.replace(/\s+/g, '%20');
     console.log(name); 
-    window.location.href = `index.html?query=${name}`;
+    window.location.href = `?query=${name}`;
 }
 
 document.addEventListener("DOMContentLoaded",() => {
@@ -864,7 +864,7 @@ function addMovieCard(movie,searched){
     movieCard.classList.add('movie-card');
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){
-        window.location.href=`index.html?movieID=${movie.imdbID}`;
+        window.location.href=`?movieID=${movie.imdbID}`;
     })
     movieCard.addEventListener('keypress',(event) =>{
       if(event.key==="Enter"){
