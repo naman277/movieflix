@@ -874,7 +874,7 @@ function addMovieCard(movie,searched){
     })
     movieCard.tabIndex=0;
     if(searched){
-      movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}"> </div>
+      movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}" alt="🎬"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show">
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>
@@ -882,13 +882,39 @@ function addMovieCard(movie,searched){
             </div>`;
     }
     else{
-    movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}"> </div>
+    movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}" alt="🎬"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     }
+
+
+    // ==========================================================
+    const img = movieCard.querySelector(".poster");
+    const imageContainer = movieCard.querySelector(".image-container");
+
+    if (movie.Poster === "N/A") {
+      img.remove();   
+      imageContainer.innerHTML = `
+        <div class="no-poster">
+          🎬
+        </div>
+      `;
+    } else {
+      img.onerror = () => {
+        img.remove();
+        imageContainer.innerHTML = `
+          <div class="no-poster">
+            🎬
+          </div>
+        `;
+      };
+    }
+    
+
+// =======================================================
     return movieCard;
 }
 
