@@ -866,7 +866,7 @@ function addMovieCard(movie,searched){
         window.location.href=`index.html?movieID=${movie.imdbID}`;
     })
     if(searched){
-      movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
+      movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show">
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>
@@ -874,10 +874,10 @@ function addMovieCard(movie,searched){
             </div>`;
     }
     else{
-    movieCard.innerHTML=`<img class="poster" src="${movie.Poster}">
+    movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p>${movie.Year} - ⭐${movie.imdbRating}</p>
+                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     }
@@ -894,7 +894,7 @@ function loadHomePage(){
             const movieCard = addMovieCard(movie,false);
             movieField.appendChild(movieCard);
         })
-    },2000)
+    },500)
 }
 
 async function loadMoviePage(id) {
