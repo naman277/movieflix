@@ -828,7 +828,7 @@ function searchMovie(){
     name = name.trimStart();
     name = name.replace(/\s+/g, ' ').trim();
     name = name.replace(/\s+/g, '%20');
-    console.log(name);
+    console.log(name); 
     window.location.href = `index.html?query=${name}`;
 }
 
@@ -836,12 +836,11 @@ document.addEventListener("DOMContentLoaded",() => {
     const params = new URLSearchParams(document.location.search);
     const id = params.get('movieID');
     let name = params.get('query');
-  
+    
     if(id){
         loadMoviePage(id);
     }
     else if(name){
-        
         loadSearchResults(name);
     }
     else{
@@ -932,12 +931,13 @@ function LoadIndivualMovie(individualMovie){
 
 async function loadSearchResults(name) {
     console.log(name);
-    document.title = `${name} - Reasults`;
+    inputField.value = name;
+    document.title = `${name} - Results`;
     let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); 
     let movieList = await Movie.json();
     let result = movieList.Response.toLowerCase();
     result = result === 'true'
-    console.log("The movie was found? ",result);
+    console.log("The movie was found?",result);
     if(result) loadSearchResultsPage(movieList);
     else loadNoResultPage();
 }
