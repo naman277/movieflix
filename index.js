@@ -947,7 +947,7 @@ function LoadIndivualMovie(individualMovie){
     const header = document.getElementById('headers');
     header.insertAdjacentElement('afterend',section);
     header.insertAdjacentElement('afterend',br);
-    section.innerHTML=`<img src="${individualMovie.Poster}" alt="gotg">
+    section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
         <div class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
                 <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
@@ -960,6 +960,26 @@ function LoadIndivualMovie(individualMovie){
         
             <p class="plot-text">Plot: ${individualMovie.Plot}</p>
         </div>`;
+      const img = section.querySelector("img");
+    const imageContainer = section.querySelector(".individual-movie-poster");
+
+    if (individualMovie.Poster === "N/A") {
+      img.remove();   
+      imageContainer.innerHTML = `
+        <div class="no-individual-poster">
+          🎬
+        </div>
+      `;
+    } else {
+      img.onerror = () => {
+        img.remove();
+        imageContainer.innerHTML = `
+          <div class="no-individual-poster">
+            🎬
+          </div>
+        `;
+      };
+    }
         console.log("loadIndividualMovie executed");
 }
 

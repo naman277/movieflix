@@ -192,8 +192,21 @@ h2.searched-movie-details{
     justify-content: center;
 }
 
-.movie-page img{
+.individual-movie-poster{
+    text-align: center;
     width: 80%;
+}
+
+.movie-page img{
+    width: 100%;
+}
+
+.no-individual-poster{
+    width: 100%
+    height: 20vh;
+    text-align: center;
+    align-content: center;
+    font-size: 5rem;;
 }
 
 .movie-overview{
@@ -242,8 +255,14 @@ h2.searched-movie-details{
         padding-top: 1rem;
     }
     
-    .movie-page img{
+    .individual-movie-poster{
         width:40%;
+        align-content: center;
+    }
+
+    .no-individual-poster{
+        font-size: 8rem;
+        padding-bottom: 9rem;
     }
 
     .movie-overview{
@@ -343,9 +362,9 @@ h2.searched-movie-details{
         row-gap: 1rem;
     }
 
-    .movie-page img{
-        min-width: 22%;
-        max-width: 26%;
+    .individual-movie-poster{
+        height: 90vh;
+        width: 27vw;
     }
     .movie-overview h2{
         font-size: 4rem;
