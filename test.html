@@ -5,28 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MovieFlix</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
+    <link rel="manifest" href="../icons/site.webmanifest">
     
 </head>
 <body>
-    <header id="headers"><h1><a href="index.html">🎬 MovieFlix</a></h1>
+    <header id="headers"><h1><a href="/">🎬 MovieFlix</a></h1>
         <nav>
             <div class="search-field-div"><input type="text" name="search" id="search" placeholder="Search Movies..."></div>
-            <div class="buttons"><button id='search-button' onclick="searchMovie()">Search</button> <button id="fav-button" href="favourites.html">Favourites</button></div>
+            <div class="buttons"><button id='search-button' onclick="searchMovie()">Search</button> <button id="fav-button" onclick="openFavourites()">Favourites</button></div>
         </nav>
     </header>
-    <br>
-    <section class="movie-tiles-field">
-    <div class="movie-card">  
-        <div class="image-container"> 
-        <!-- <img class="poster" src="https://m.media-amazon.com/images/M/MV5BNWE5MGI3MDctMmU5Ni00YzI2LWEzMTQtZGIyZDA5MzQzNDBhXkEyXkFqcGc@._V1_SX300.jpg"> -->
-        </div> 
-        <div class="movie-details">   
-            <h2>Movie Title Here</h2>
-                <p>2024 - ⭐$8.8</p>
-                <p class='card-plot'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni fugiat molestias itaque aspernatur temporibus voluptate, dolorum ducimus. Earum est non porro cupiditate, repellat consequatur tempora eveniet alias numquam impedit tempore! Suscipit culpa, quis corporis odit nobis molestias. Blanditiis explicabo ullam, maxime libero impedit fugiat sit ut voluptatum consectetur necessitatibus quo?</p>
-            </div>
-    </div>
+    <section class="spinner" id="spinner">
+        <div class="loader"></div>
     </section>
 </body>
-<script src="index.js"></script>
+<script src="test.js"></script>
 </html>
