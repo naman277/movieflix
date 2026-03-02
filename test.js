@@ -853,14 +853,56 @@ document.addEventListener("DOMContentLoaded",() => {
     }
 })
 
-function createSection(){
+function createSection(favouritesPage){
     const header = document.querySelector('#headers');
     const br = document.createElement('br');
     const section = document.createElement('section');
     section.classList.add('movie-tiles-field');
     header.insertAdjacentElement('afterend',section);
     header.insertAdjacentElement('afterend',br);
+    if(favouritesPage){
+        document.getElementById('fav-button').innerText="Remove";
+        document.getElementById('fav-button')
+        .addEventListener("click", () => {
+        window.location.href = "test.html";
+    });
+    }
     return section;
+}
+
+const favBtn = document.getElementById("fav-button");
+
+favBtn.addEventListener("dragover", (e) => {
+    e.preventDefault(); // REQUIRED
+});
+
+favBtn.addEventListener("drop", (e) => {
+
+    e.preventDefault();
+
+    const imdbID =
+        e.dataTransfer.getData("text/plain");
+
+        if(favBtn.innerText==="Remove"){
+            removeMovieCard(imdbID);
+            removeFromFavourite(imdbID);
+        }
+        
+        if(favBtn.innerText==="Favourites"){
+            addToFavourite(imdbID);
+        }
+
+    console.log("Added to favourites:", imdbID);
+});
+
+function removeMovieCard(id){
+    const card = document.querySelector(
+        `.movie-card[data-id="${id}"]`
+    );
+
+    if (card) {
+        card.remove();
+    }
 }
 
 function addMovieCard(movie,searched){
@@ -877,8 +919,10 @@ function addMovieCard(movie,searched){
       }
     })
     movieCard.tabIndex=0;
+    movieCard.draggable=true;
+    movieCard.dataset.id = movie.imdbID;
     if(searched){
-      movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}" alt="🎬"> </div>
+      movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="🎬"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>
@@ -886,7 +930,7 @@ function addMovieCard(movie,searched){
             </div>`;
     }
     else{
-    movieCard.innerHTML=`<div class="image-container"><img class="poster" src="${movie.Poster}" alt="🎬"> </div>
+    movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="🎬"> </div>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
@@ -894,7 +938,12 @@ function addMovieCard(movie,searched){
             </div>`;
     }
 
-
+    movieCard.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData(
+        "text/plain",
+        movie.imdbID
+    );
+});
     // ==========================================================
     const img = movieCard.querySelector(".poster");
     const imageContainer = movieCard.querySelector(".image-container");
@@ -926,7 +975,7 @@ function loadHomePage(){
     setTimeout(function(){
         removeLoader();
         console.log("ye loadHomePage function chal gaya bidhu");
-        const movieField=createSection();
+        const movieField=createSection(false);
 
         movieapi.data.forEach(function(movie){
             const movieCard = addMovieCard(movie,false);
@@ -952,17 +1001,12 @@ function LoadIndivualMovie(individualMovie){
     header.insertAdjacentElement('afterend',section);
     header.insertAdjacentElement('afterend',br);
     let favMessage;
-    const exists = favouriteMovies.some(
-        m => m.imdbID === individualMovie.imdbID
-    );
-
-    if (exists) {
-        favMessage="Remove from favourites";
-    } else {
-        favMessage="Add to Favourites";
-    }
-    let individualMovieString = JSON.stringify(individualMovie);
     
+        if (favouriteMoviesID.includes(individualMovie.imdbID)) {
+        favMessage="Remove from Favourites";
+    } else {
+        favMessage = "Add to Favourites";
+    }
     section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
         <div class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
@@ -975,23 +1019,26 @@ function LoadIndivualMovie(individualMovie){
                   <span class="additional-detail-title"> Cast: </span> <br class='mobile-hide'> ${individualMovie.Actors} </p>
         
             <p class="plot-text">Plot: ${individualMovie.Plot}</p>
-            <button class="toggle-fav-button" id="toggle-fav">${favMessage}</button>
+            <button id="toggle-fav">${favMessage}</button>
         </div>`;
-        let toggleButton = document.getElementById('toggle-fav');
-        toggleButton.addEventListener("click",  function(){
-            toggleFavourite(individualMovieString);
-            if(toggleButton.innerText==="Add to Favourites"){
-                toggleButton.innerText="Remove From Favourites";
-            }
-            else{
-                toggleButton.innerText="Add to Favourites";
-            }
-        });
-        
-        
-        
-        const img = section.querySelector("img");
-      const imageContainer = section.querySelector(".individual-movie-poster");
+
+    let favButton = document.getElementById('toggle-fav');
+    favButton.addEventListener("click", ()=>{
+        let id = individualMovie.imdbID;
+        if(favButton.innerText==="Add to Favourites"){
+            addToFavourite(id);
+            favButton.innerText="Remove from Favourites";
+        }
+        else{
+            removeFromFavourite(id);
+            favButton.innerText="Add to Favourites";
+        }
+    })
+
+
+      const img = section.querySelector("img");
+    const imageContainer = section.querySelector(".individual-movie-poster");
+
     if (individualMovie.Poster === "N/A") {
       img.remove();   
       imageContainer.innerHTML = `
@@ -1012,8 +1059,6 @@ function LoadIndivualMovie(individualMovie){
         console.log("loadIndividualMovie executed");
 }
 
-
-
 async function loadSearchResults(name) {
     console.log(name);
     inputField.value = name;
@@ -1030,7 +1075,7 @@ async function loadSearchResults(name) {
 function loadSearchResultsPage(movieList){
     removeLoader();
     console.log("ye loadSearchResultsPage function chal gaya bidhu");
-    const movieField=createSection();
+    const movieField=createSection(false);
     movieList.Search.forEach((movie) => {
         const movieCard = addMovieCard(movie,true);
         movieField.appendChild(movieCard);
@@ -1041,7 +1086,7 @@ function loadNoResultPage(){
   document.title="No Results Found - Movieflix"
   removeLoader();
   console.log("ye loadNoResultPage function chal gaya bidhu");
-  const movieField=createSection();
+  const movieField=createSection(false);
   movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
 }
 
@@ -1061,49 +1106,69 @@ function removeLoader(){
 
 //favourites logic
 
-let favouriteMovies =
-    JSON.parse(localStorage.getItem("favourites")) || [];
+let favouriteMoviesID =
+    JSON.parse(localStorage.getItem("favourite")) || [];
 
 function openFavourites(){
     window.location.href = `?page=favourites`;
+    document.getElementById('fav-button').innerText="Remove";
 }
-
-function toggleFavourite(movieString) {
-    let movie = JSON.parse(movieString)
-    console.log(movie);
-    const exists = favouriteMovies.some(
-        m => m.imdbID === movie.imdbID
-    );
-    console.log(exists);
-    if (exists) {
-        favouriteMovies =
-            favouriteMovies.filter(
-                m => m.imdbID !== movie.imdbID
-            );
-    } else {
-        favouriteMovies.push(movie);
-    }
-
+function removeFromFavourite(imdbID){
+    console.log("Remove");
+    favouriteMoviesID = favouriteMoviesID.filter(item => item !== imdbID);
     localStorage.setItem(
-        "favourites",
-        JSON.stringify(favouriteMovies)
+        "favourite",
+        JSON.stringify(favouriteMoviesID)
     );
 }
+
+function addToFavourite(imdbID){
+    console.log("Add");
+    if (favouriteMoviesID.includes(imdbID)) {
+        return;
+    } else {
+        favouriteMoviesID.push(imdbID);
+    }
+    localStorage.setItem(
+        "favourite",
+        JSON.stringify(favouriteMoviesID)
+    );
+}
+
+// function toggleFavourite(id) {
+
+//     if (favouriteMoviesID.includes(id)) {
+//         favouriteMoviesID =
+//             favouriteMoviesID.filter(item => item !== id);
+//     } else {
+//         favouriteMoviesID.push(id);
+//     }
+
+    // localStorage.setItem(
+    //     "favourite",
+    //     JSON.stringify(favouriteMoviesID)
+    // );
+// }
 
 async function loadFavouritesPage(){
 
     console.log("Favourites page loaded");
 
-    const movieField = createSection();
+    const movieField = createSection(true);
 
-    if (favouriteMovies.length === 0) {
-        movieField.innerHTML = "<h2>No favourites yet</h2>";
+    if (favouriteMoviesID.length === 0) {
+        movieField.innerHTML = "<h2 style='color : white;'>No favourites yet</h2>";
         removeLoader();
         return;
     }
 
-    for (const movie of favouriteMovies) {
-        console.log(movie);
+    for (const movieID of favouriteMoviesID) {
+
+        const response =
+            await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
+
+        const movie = await response.json();
+
         const movieCard = addMovieCard(movie, false);
         movieField.appendChild(movieCard);
     }
