@@ -202,11 +202,11 @@ h2.searched-movie-details{
 }
 
 .no-individual-poster{
-    width: 100%
+    width: 100%;
     height: 20vh;
     text-align: center;
     align-content: center;
-    font-size: 5rem;;
+    font-size: 5rem;
 }
 
 .movie-overview{
