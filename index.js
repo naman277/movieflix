@@ -991,8 +991,8 @@ async function loadMoviePage(id) {
 }
 
 function LoadIndivualMovie(individualMovie){
+  document.title = `${individualMovie.Title} - Movieflix`
     removeLoader();
-    document.title = `${individualMovie.Title} - Movieflix`
     const section = document.createElement('section');
     section.classList.add("movie-page");
     const br = document.createElement('br');
@@ -1151,7 +1151,7 @@ function addToFavourite(imdbID){
 // }
 
 async function loadFavouritesPage(){
-
+    document.title="Favourites - Movieflix";
     console.log("Favourites page loaded");
 
     const movieField = createSection(true);
