@@ -854,12 +854,12 @@ document.addEventListener("DOMContentLoaded",() => {
 })
 
 function createSection(favouritesPage){
-    const header = document.querySelector('#headers');
-    const br = document.createElement('br');
+    
     const section = document.createElement('section');
     section.classList.add('movie-tiles-field');
-    header.insertAdjacentElement('afterend',section);
-    header.insertAdjacentElement('afterend',br);
+    if(!favouritesPage) {
+        appendMovieField(section);
+    }
     if(favouritesPage){
         document.getElementById('fav-button').innerText="Remove";
         document.getElementById('fav-button')
@@ -902,8 +902,7 @@ function removeMovieCard(id){
 
     if (card) {
         card.remove();
-    }
-}
+    }}
 
 function addMovieCard(movie,searched){
     const movieCard = document.createElement('div');
@@ -1120,6 +1119,7 @@ function removeFromFavourite(imdbID){
         "favourite",
         JSON.stringify(favouriteMoviesID)
     );
+    
 }
 
 function addToFavourite(imdbID){
@@ -1155,23 +1155,32 @@ async function loadFavouritesPage(){
     console.log("Favourites page loaded");
 
     const movieField = createSection(true);
-
+    console.log(favouriteMoviesID.length);
     if (favouriteMoviesID.length === 0) {
         movieField.innerHTML = "<h2 style='color : white;'>No favourites yet</h2>";
         removeLoader();
+        appendMovieField(movieField);
         return;
     }
-
+    
     for (const movieID of favouriteMoviesID) {
-
+        
         const response =
-            await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
-
+        await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
+        
         const movie = await response.json();
-
+        
         const movieCard = addMovieCard(movie, false);
         movieField.appendChild(movieCard);
     }
-
     removeLoader();
+    appendMovieField(movieField);
+    
+}
+
+function appendMovieField(movieField){
+    const header = document.querySelector('#headers');
+    const br = document.createElement('br');
+    header.insertAdjacentElement('afterend',movieField);
+    header.insertAdjacentElement('afterend',br);
 }
