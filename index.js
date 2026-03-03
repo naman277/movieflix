@@ -1125,10 +1125,13 @@ function removeFromFavourite(imdbID){
         "favourite",
         JSON.stringify(favouriteMoviesID)
     );
-    if(favouriteMoviesID.length===0){
-        
+    if(favouriteMoviesID.length===0){ 
+      const params = new URLSearchParams(document.location.search);
+      let page = params.get('page');
+      if(page==="favourites"){ 
       document.querySelector(".fav-movie-text").remove();
       loadNoResultPage();
+      }
 
 
     }
