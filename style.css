@@ -180,6 +180,12 @@ header nav{
     overflow: hidden;
 }
 
+.fav-movie-text{
+    text-align: center;
+    color: rgb(100, 100, 100);
+    font-size: larger;
+}
+
 h2.searched-movie-details{
     color: #78869a;
     padding-top: 5px;
@@ -212,6 +218,7 @@ h2.searched-movie-details{
 .movie-overview{
     text-align: center;
     padding: 0 1rem;
+    padding-bottom: 2rem;
 }
 
 .plot-text{
@@ -219,6 +226,22 @@ h2.searched-movie-details{
     padding-left: 1rem;
     padding-right: 1rem;
     text-align: justify;
+}
+
+#toggle-fav{
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: #1d283a;
+    border: none;
+    color: white;
+    font-size: large;
+    font-weight: bold;
+}
+
+#toggle-fav:hover{
+    background-color: #0e3e96;
 }
 
 /* 768px to 1024px */
@@ -257,7 +280,7 @@ h2.searched-movie-details{
     
     .individual-movie-poster{
         width:40%;
-        align-content: center;
+        align-content: flex-start;
     }
 
     .no-individual-poster{
@@ -269,6 +292,7 @@ h2.searched-movie-details{
         width: 53%;
         text-align: left;
         padding-left: 0;
+        
     }
 
     .movie-overview h2{

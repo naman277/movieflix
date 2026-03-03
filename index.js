@@ -858,7 +858,8 @@ function createSection(favouritesPage){
     const section = document.createElement('section');
     section.classList.add('movie-tiles-field');
     if(!favouritesPage) {
-        appendMovieField(section);
+        appendMovieField(section,false);
+        
     }
     if(favouritesPage){
         document.getElementById('fav-button').innerText="Remove";
@@ -1068,7 +1069,11 @@ async function loadSearchResults(name) {
     result = result === 'true'
     console.log("The movie was found?",result);
     if(result) loadSearchResultsPage(movieList);
-    else loadNoResultPage();
+    else{
+      removeLoader();
+      loadNoResultPage();
+
+    }
 }
 
 function loadSearchResultsPage(movieList){
@@ -1083,9 +1088,10 @@ function loadSearchResultsPage(movieList){
 
 function loadNoResultPage(){
   document.title="No Results Found - Movieflix"
-  removeLoader();
+ 
   console.log("ye loadNoResultPage function chal gaya bidhu");
   const movieField=createSection(false);
+  document.querySelector(".fav-movie-text").remove();
   movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
 }
 
@@ -1119,6 +1125,13 @@ function removeFromFavourite(imdbID){
         "favourite",
         JSON.stringify(favouriteMoviesID)
     );
+    if(favouriteMoviesID.length===0){
+        
+      document.querySelector(".fav-movie-text").remove();
+      loadNoResultPage();
+
+
+    }
     
 }
 
@@ -1157,9 +1170,10 @@ async function loadFavouritesPage(){
     const movieField = createSection(true);
     console.log(favouriteMoviesID.length);
     if (favouriteMoviesID.length === 0) {
-        movieField.innerHTML = "<h2 style='color : white;'>No favourites yet</h2>";
+        movieField.innerHTML = `<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`;
         removeLoader();
-        appendMovieField(movieField);
+        appendMovieField(movieField,true);
+        document.querySelector(".fav-movie-text").remove();
         return;
     }
     
@@ -1174,13 +1188,18 @@ async function loadFavouritesPage(){
         movieField.appendChild(movieCard);
     }
     removeLoader();
-    appendMovieField(movieField);
+    appendMovieField(movieField,true);
     
 }
 
-function appendMovieField(movieField){
+function appendMovieField(movieField,favouritesPage){
     const header = document.querySelector('#headers');
     const br = document.createElement('br');
     header.insertAdjacentElement('afterend',movieField);
     header.insertAdjacentElement('afterend',br);
+    const favLine=document.createElement("p");
+    favLine.classList.add('fav-movie-text');
+    if(!favouritesPage) favLine.innerText="Drag your Favourite Movie towards Favourite Button!";
+    else favLine.innerText="Drag a movie towards Remove Button to remove it from Favourites!";
+    movieField.insertAdjacentElement("afterend",favLine);
 }
