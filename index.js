@@ -1035,7 +1035,7 @@ function LoadIndivualMovie(individualMovie){
         }
     })
 
-
+ //image handling
       const img = section.querySelector("img");
     const imageContainer = section.querySelector(".individual-movie-poster");
 
