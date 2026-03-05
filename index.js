@@ -804,9 +804,10 @@ const movieapi = {
 ]
 }
 
+//next 16 lines are making sure that the search functionality is disabled until something is written in the input field
 let inputField = document.getElementById("search");
 let searchbutton = document.getElementById('search-button');
-setInterval(function(){
+setInterval(function(){          //checks every 0.5 seconds if search field is empty
   let searchname = inputField.value;
   if(searchname === ""){
   searchbutton.disabled = true;
@@ -814,8 +815,8 @@ setInterval(function(){
 else{
   searchbutton.disabled = false;
 }},500);
-
-inputField.addEventListener('keypress',(event)=>{
+ 
+inputField.addEventListener('keypress',(event)=>{ //click event for search button when enter is pressed
   if(event.key=== "Enter"){
     event.preventDefault();
     searchbutton.click();
@@ -823,7 +824,7 @@ inputField.addEventListener('keypress',(event)=>{
 });
 
 
-function searchMovie(){
+function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
     const inputField = document.getElementById("search");
     let name = inputField.value;
     name = name.trimStart();
@@ -833,35 +834,40 @@ function searchMovie(){
     window.location.href = `?query=${name}`;
 }
 
-document.addEventListener("DOMContentLoaded",() => {
+document.addEventListener("DOMContentLoaded",() => {   //always checks for the parameters in the URL
     const params = new URLSearchParams(document.location.search);
     const id = params.get('movieID');
     let name = params.get('query');
     let page = params.get('page');
     
-    if(id){
+    //When URL contains imdbID of the movie, then the movie page is opened
+    if(id){ 
         loadMoviePage(id);
     }
+    //when a movie is searched
     else if(name){
         loadSearchResults(name);
     }
+    //when favourites page is opened
     else if(page=="favourites"){
         loadFavouritesPage();
     }
+    //homepage
     else{
         loadHomePage();
     }
 })
 
+//This function creates the movie tiles field where all the movie cards are displayed. This method is called on homepage/search results page/favourites page
 function createSection(favouritesPage){
     
     const section = document.createElement('section');
     section.classList.add('movie-tiles-field');
     if(!favouritesPage) {
-        appendMovieField(section,false);
+        appendMovieField(section,false);   //The false value is to tell that it is not favouritesPage. for favpage, it is not appended immediately
         
     }
-    if(favouritesPage){
+    if(favouritesPage){  //changes the favourites button to remove button
         document.getElementById('fav-button').innerText="Remove";
         document.getElementById('fav-button')
         .addEventListener("click", () => {
@@ -873,8 +879,8 @@ function createSection(favouritesPage){
 
 const favBtn = document.getElementById("fav-button");
 
-favBtn.addEventListener("dragover", (e) => {
-    e.preventDefault(); // REQUIRED
+favBtn.addEventListener("dragover", (e) => {   //drag and drop functionality
+    e.preventDefault(); //used to stop browser from blocking drop
 });
 
 favBtn.addEventListener("drop", (e) => {
@@ -884,18 +890,20 @@ favBtn.addEventListener("drop", (e) => {
     const imdbID =
         e.dataTransfer.getData("text/plain");
 
-        if(favBtn.innerText==="Remove"){
+        if(favBtn.innerText==="Remove"){          //Remove from fav functionality
             removeMovieCard(imdbID);
             removeFromFavourite(imdbID);
         }
         
-        if(favBtn.innerText==="Favourites"){
+        if(favBtn.innerText==="Favourites"){   //Add to favourites functionality
             addToFavourite(imdbID);
         }
 
     console.log("Added to favourites:", imdbID);
 });
 
+
+//Removes the movie card from favourites page when it dragged towards remove button
 function removeMovieCard(id){
     const card = document.querySelector(
         `.movie-card[data-id="${id}"]`
@@ -905,14 +913,15 @@ function removeMovieCard(id){
         card.remove();
     }}
 
-function addMovieCard(movie,searched){
+//This function adds movie cards on the movie field section in homepage,search and favs
+function addMovieCard(movie,searched){             //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
     const movieCard = document.createElement('div');
-    movieCard.classList.add('movie-card');
+    movieCard.classList.add('movie-card'); 
     movieCard.style.cursor='pointer';
-    movieCard.addEventListener('click', function(){
+    movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
         window.location.href=`?movieID=${movie.imdbID}`;
     })
-    movieCard.addEventListener('keypress',(event) =>{
+    movieCard.addEventListener('keypress',(event) =>{   //when a movie is selected using tab key, pressing enter redirects to the selected movie
       if(event.key==="Enter"){
         event.preventDefault();
         movieCard.click();
@@ -945,6 +954,7 @@ function addMovieCard(movie,searched){
     );
 });
     // ==========================================================
+    //no poster image handling
     const img = movieCard.querySelector(".poster");
     const imageContainer = movieCard.querySelector(".image-container");
 
@@ -971,11 +981,12 @@ function addMovieCard(movie,searched){
     return movieCard;
 }
 
+//Loads the home page after removing the loader
 function loadHomePage(){
     setTimeout(function(){
         removeLoader();
         console.log("ye loadHomePage function chal gaya bidhu");
-        const movieField=createSection(false);
+        const movieField=createSection(false);       //section is created with favourites set to false
 
         movieapi.data.forEach(function(movie){
             const movieCard = addMovieCard(movie,false);
@@ -984,6 +995,7 @@ function loadHomePage(){
     },500)
 }
 
+//for loading individual movies
 async function loadMoviePage(id) {
     let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
     let individualMovie = await Movie.json();
@@ -1002,11 +1014,13 @@ function LoadIndivualMovie(individualMovie){
     header.insertAdjacentElement('afterend',br);
     let favMessage;
     
-        if (favouriteMoviesID.includes(individualMovie.imdbID)) {
+    //add to fav or remove from fav button accordingly if it is in fav or not
+        if (favouriteMoviesID.includes(individualMovie.imdbID)) {               
         favMessage="Remove from Favourites";
     } else {
         favMessage = "Add to Favourites";
     }
+
     section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
         <div class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
@@ -1023,6 +1037,7 @@ function LoadIndivualMovie(individualMovie){
         </div>`;
 
     let favButton = document.getElementById('toggle-fav');
+
     favButton.addEventListener("click", ()=>{
         let id = individualMovie.imdbID;
         if(favButton.innerText==="Add to Favourites"){
@@ -1059,6 +1074,7 @@ function LoadIndivualMovie(individualMovie){
         console.log("loadIndividualMovie executed");
 }
 
+//Page after searching a movie
 async function loadSearchResults(name) {
     console.log(name);
     inputField.value = name;
@@ -1068,8 +1084,8 @@ async function loadSearchResults(name) {
     let result = movieList.Response.toLowerCase();
     result = result === 'true'
     console.log("The movie was found?",result);
-    if(result) loadSearchResultsPage(movieList);
-    else{
+    if(result) loadSearchResultsPage(movieList);  //loads movie names if searched
+    else{         //tells that no movie is found in the search rewsults
       removeLoader();
       loadNoResultPage();
 
@@ -1078,18 +1094,19 @@ async function loadSearchResults(name) {
 
 function loadSearchResultsPage(movieList){
     removeLoader();
-    console.log("ye loadSearchResultsPage function chal gaya bidhu");
-    const movieField=createSection(false);
+    console.log("ye loadSearchResultsPage function chal gaya");
+    const movieField=createSection(false);     //false bcz no fav page
     movieList.Search.forEach((movie) => {
         const movieCard = addMovieCard(movie,true);
         movieField.appendChild(movieCard);
     })
 }
 
+
 function loadNoResultPage(){
   document.title="No Results Found - Movieflix"
  
-  console.log("ye loadNoResultPage function chal gaya bidhu");
+  console.log("ye loadNoResultPage function chal gaya");
   const movieField=createSection(false);
   document.querySelector(".fav-movie-text").remove();
   movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
@@ -1100,51 +1117,45 @@ function removeLoader(){
   load.remove();
 }
 
-
-
-
-
-
-
-
-
-
 //favourites logic
 
+//storing movie names in localstorage
 let favouriteMoviesID =
     JSON.parse(localStorage.getItem("favourite")) || [];
 
+//called when favourites button is clicked
 function openFavourites(){
     window.location.href = `?page=favourites`;
     document.getElementById('fav-button').innerText="Remove";
 }
+
+
 function removeFromFavourite(imdbID){
-    console.log("Remove");
-    favouriteMoviesID = favouriteMoviesID.filter(item => item !== imdbID);
-    localStorage.setItem(
-        "favourite",
-        JSON.stringify(favouriteMoviesID)
-    );
-    if(favouriteMoviesID.length===0){ 
-      const params = new URLSearchParams(document.location.search);
-      let page = params.get('page');
-      if(page==="favourites"){ 
-      document.querySelector(".fav-movie-text").remove();
-      loadNoResultPage();
-      }
-
-
+  console.log("Remove");
+  favouriteMoviesID = favouriteMoviesID.filter(item => item !== imdbID);    //removes movie ID from favs
+  localStorage.setItem(
+      "favourite",
+      JSON.stringify(favouriteMoviesID)
+  );
+  if(favouriteMoviesID.length===0){    //handling if there is no fav movie
+    const params = new URLSearchParams(document.location.search);
+    let page = params.get('page');
+    if(page==="favourites"){ 
+    document.querySelector(".fav-movie-text").remove();
+    loadNoResultPage();
     }
-    
+  }
 }
+
 
 function addToFavourite(imdbID){
     console.log("Add");
-    if (favouriteMoviesID.includes(imdbID)) {
+    if (favouriteMoviesID.includes(imdbID)) { //if movie is already in favs, then no need to add it again
         return;
     } else {
         favouriteMoviesID.push(imdbID);
     }
+    //add in localstorage
     localStorage.setItem(
         "favourite",
         JSON.stringify(favouriteMoviesID)
@@ -1166,20 +1177,23 @@ function addToFavourite(imdbID){
     // );
 // }
 
+
+//to load all the favourite movies of user
 async function loadFavouritesPage(){
     document.title="Favourites - Movieflix";
     console.log("Favourites page loaded");
 
-    const movieField = createSection(true);
+    const movieField = createSection(true);   //true bcz it is favourites page
     console.log(favouriteMoviesID.length);
-    if (favouriteMoviesID.length === 0) {
+    if (favouriteMoviesID.length === 0) {      //if no fav movie present
         movieField.innerHTML = `<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`;
         removeLoader();
-        appendMovieField(movieField,true);
+        appendMovieField(movieField,true);    
         document.querySelector(".fav-movie-text").remove();
         return;
     }
     
+    //API calls when there are favourite movies
     for (const movieID of favouriteMoviesID) {
         
         const response =
@@ -1187,7 +1201,7 @@ async function loadFavouritesPage(){
         
         const movie = await response.json();
         
-        const movieCard = addMovieCard(movie, false);
+        const movieCard = addMovieCard(movie, false);       //false bcz not searched
         movieField.appendChild(movieCard);
     }
     removeLoader();
@@ -1195,14 +1209,15 @@ async function loadFavouritesPage(){
     
 }
 
-function appendMovieField(movieField,favouritesPage){
+//it appends the section creeated for all the movie cards
+function appendMovieField(movieField,favouritesPage){  //favouritesPage parameter helps user by changing the text to tell if the movie is added to fav page or removed from it
     const header = document.querySelector('#headers');
     const br = document.createElement('br');
     header.insertAdjacentElement('afterend',movieField);
     header.insertAdjacentElement('afterend',br);
     const favLine=document.createElement("p");
     favLine.classList.add('fav-movie-text');
-    if(!favouritesPage) favLine.innerText="Drag your Favourite Movie towards Favourite Button!";
+    if(!favouritesPage) favLine.innerText="Drag your Favourite Movie towards Favourite Button!";  
     else favLine.innerText="Drag a movie towards Remove Button to remove it from Favourites!";
     movieField.insertAdjacentElement("afterend",favLine);
 }
