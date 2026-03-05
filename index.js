@@ -997,10 +997,17 @@ function loadHomePage(){
 
 //for loading individual movies
 async function loadMoviePage(id) {
-    let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
-    let individualMovie = await Movie.json();
-    console.log("loadMoviePage executed");
-    LoadIndivualMovie(individualMovie);
+    try{
+      let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
+  
+      let individualMovie = await Movie.json();
+      console.log("loadMoviePage executed");
+      LoadIndivualMovie(individualMovie);
+    }
+    catch(e){
+      console.log("Couldn't Load Movie: ",e);
+      
+    }
 }
 
 function LoadIndivualMovie(individualMovie){
@@ -1079,16 +1086,20 @@ async function loadSearchResults(name) {
     console.log(name);
     inputField.value = name;
     document.title = `${name} - Results`;
-    let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); 
-    let movieList = await Movie.json();
-    let result = movieList.Response.toLowerCase();
-    result = result === 'true'
-    console.log("The movie was found?",result);
-    if(result) loadSearchResultsPage(movieList);  //loads movie names if searched
-    else{         //tells that no movie is found in the search rewsults
-      removeLoader();
-      loadNoResultPage();
-
+    try{
+      let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); 
+      let movieList = await Movie.json();
+      let result = movieList.Response.toLowerCase();
+      result = result === 'true'
+      console.log("The movie was found?",result);
+      if(result) loadSearchResultsPage(movieList);  //loads movie names if searched
+      else{         //tells that no movie is found in the search rewsults
+        removeLoader();
+        loadNoResultPage();
+      }
+    }
+    catch(e){
+      console.log("Something went wrong: ",e);
     }
 }
 
@@ -1189,20 +1200,26 @@ async function loadFavouritesPage(){
         movieField.innerHTML = `<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`;
         removeLoader();
         appendMovieField(movieField,true);    
+
         document.querySelector(".fav-movie-text").remove();
         return;
-    }
-    
-    //API calls when there are favourite movies
-    for (const movieID of favouriteMoviesID) {
+      }
+      
+      //API calls when there are favourite movies
+      for (const movieID of favouriteMoviesID) {
         
-        const response =
-        await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
-        
-        const movie = await response.json();
-        
-        const movieCard = addMovieCard(movie, false);       //false bcz not searched
-        movieField.appendChild(movieCard);
+        try{
+          const response =
+          await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
+          
+          const movie = await response.json();
+          
+          const movieCard = addMovieCard(movie, false);       //false bcz not searched
+          movieField.appendChild(movieCard);
+        }
+        catch(e){
+          console.log("Something went wrong",e);
+      }
     }
     removeLoader();
     appendMovieField(movieField,true);
