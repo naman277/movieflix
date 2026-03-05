@@ -985,7 +985,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
 function loadHomePage(){
     setTimeout(function(){
         removeLoader();
-        console.log("ye loadHomePage function chal gaya bidhu");
+        console.log("ye loadHomePage function chal gaya ");
         const movieField=createSection(false);       //section is created with favourites set to false
 
         movieapi.data.forEach(function(movie){
