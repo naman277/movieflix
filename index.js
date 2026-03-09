@@ -815,7 +815,7 @@ setInterval(function(){          //checks every 0.5 seconds if search field is e
 else{
   searchbutton.disabled = false;
 }},500);
- 
+
 inputField.addEventListener('keypress',(event)=>{ //click event for search button when enter is pressed
   if(event.key=== "Enter"){
     event.preventDefault();
@@ -868,10 +868,10 @@ function createSection(favouritesPage){
         
     }
     if(favouritesPage){  //changes the favourites button to remove button
-        document.getElementById('fav-button').innerText="Remove";
-        document.getElementById('fav-button')
-        .addEventListener("click", () => {
-        window.location.href = "/";
+      document.getElementById('fav-button').innerText="Remove";
+      document.getElementById('fav-button')
+      .addEventListener("click", () => {
+      window.location.href = "/";
     });
     }
     return section;
@@ -887,8 +887,7 @@ favBtn.addEventListener("drop", (e) => {
 
     e.preventDefault();
 
-    const imdbID =
-        e.dataTransfer.getData("text/plain");
+    const imdbID = e.dataTransfer.getData("text/plain");
 
         if(favBtn.innerText==="Remove"){          //Remove from fav functionality
             removeMovieCard(imdbID);
