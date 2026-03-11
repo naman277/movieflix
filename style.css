@@ -11,6 +11,8 @@ header{
     width: 100%;
 }
 
+
+
 .go-back{
     border-radius: 1rem;
     margin-right: 0.5rem;
@@ -117,6 +119,7 @@ header nav{
     background-color: #1d283a;
     height: 10rem;
     color: #78869a;
+    margin: 0;
     gap: 1rem;
     border-radius: 10px;
     overflow: hidden; 
@@ -143,6 +146,8 @@ header nav{
     display: flex;
     align-items: center;
     background: linear-gradient(145deg, #1f2a3a, #0f1a2b);
+    margin: 0;
+    border-radius: 7px;
 }
 
 .poster{

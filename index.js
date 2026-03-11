@@ -914,7 +914,7 @@ function removeMovieCard(id){
 
 //This function adds movie cards on the movie field section in homepage,search and favs
 function addMovieCard(movie,searched){             //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
-    const movieCard = document.createElement('div');
+    const movieCard = document.createElement('figure');
     movieCard.classList.add('movie-card'); 
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
@@ -929,21 +929,35 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     movieCard.tabIndex=0;
     movieCard.draggable=true;
     movieCard.dataset.id = movie.imdbID;
-    if(searched){
-      movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="🎬"> </div>
-            <div class="movie-details">
+
+    let posteralt = `Poster of ${movie.Title}`;
+
+    let posterExists = URL.canParse(movie.Poster);
+    // console.log(posterExists);
+
+    if(searched && posterExists){
+      movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </div>
+            <figcaption class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
-                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>
-                
-            </div>`;
+                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
+            </figcaption>`;
+    }
+    else if(searched && !posterExists){
+      movieCard.innerHTML=`<div class="image-container"><div class="no-poster" alt="${posteralt}">
+          🎬
+        </div> </div>
+            <figcaption class="movie-details">
+                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
+                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
+            </figcaption>`;
     }
     else{
-    movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="🎬"> </div>
-            <div class="movie-details">
+    movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </div>
+            <figcaption class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
-            </div>`;
+            </figcaption>`;
     }
 
     movieCard.addEventListener("dragstart", (e) => {
@@ -954,26 +968,26 @@ function addMovieCard(movie,searched){             //searched parameters tells i
 });
     // ==========================================================
     //no poster image handling
-    const img = movieCard.querySelector(".poster");
-    const imageContainer = movieCard.querySelector(".image-container");
+    // const img = movieCard.querySelector(".poster");
+    // const imageContainer = movieCard.querySelector(".image-container");
 
-    if (movie.Poster === "N/A") {
-      img.remove();   
-      imageContainer.innerHTML = `
-        <div class="no-poster">
-          🎬
-        </div>
-      `;
-    } else {
-      img.onerror = () => {
-        img.remove();
-        imageContainer.innerHTML = `
-          <div class="no-poster">
-            🎬
-          </div>
-        `;
-      };
-    }
+    // if (movie.Poster === "N/A") {
+    //   img.remove();   
+    //   imageContainer.innerHTML = `
+    //     <div class="no-poster" alt="${movie.Title}">
+    //       🎬
+    //     </div>
+    //   `;
+    // } else {
+    //   img.onerror = () => {
+    //     img.remove();
+    //     imageContainer.innerHTML = `
+    //       <div class="no-poster" alt="${movie.Title}">
+    //         🎬
+    //       </div>
+    //     `;
+    //   };
+    // }
     
 
 // =======================================================
@@ -1027,7 +1041,11 @@ function LoadIndivualMovie(individualMovie){
         favMessage = "Add to Favourites";
     }
 
-    section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
+    let posterExists = URL.canParse(individualMovie.Poster);
+
+    if(posterExists)
+    {
+      section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
         <div class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
                 <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
@@ -1041,6 +1059,25 @@ function LoadIndivualMovie(individualMovie){
             <p class="plot-text">Plot: ${individualMovie.Plot}</p>
             <button id="toggle-fav">${favMessage}</button>
         </div>`;
+      }
+      else{
+        section.innerHTML=`<div class="individual-movie-poster"><div class="no-individual-poster">
+          🎬
+        </div></div>
+        <div class="movie-overview">
+                <h2>${individualMovie.Title}</h2>
+                <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
+                  <p> <span class="additional-detail-title"> Genre: </span> <br class='mobile-hide'> ${individualMovie.Genre} <br><br> 
+                  <span class="additional-detail-title"> Director: </span> <br class='mobile-hide'>${individualMovie.Director} <br><br> 
+                  <span class="additional-detail-title"> Release Date: </span> <br class='mobile-hide'> ${individualMovie.Released} <br><br>
+                  <span class="additional-detail-title"> Runtime: </span> <br class='mobile-hide'> ${individualMovie.Runtime} <br><br>
+                  <span class="additional-detail-title"> Awards: </span> <br class='mobile-hide'> ${individualMovie.Awards} <br><br>
+                  <span class="additional-detail-title"> Cast: </span> <br class='mobile-hide'> ${individualMovie.Actors} </p>
+        
+            <p class="plot-text">Plot: ${individualMovie.Plot}</p>
+            <button id="toggle-fav">${favMessage}</button>
+        </div>`;
+      }
 
     let favButton = document.getElementById('toggle-fav');
 
@@ -1060,23 +1097,23 @@ function LoadIndivualMovie(individualMovie){
       const img = section.querySelector("img");
     const imageContainer = section.querySelector(".individual-movie-poster");
 
-    if (individualMovie.Poster === "N/A") {
-      img.remove();   
-      imageContainer.innerHTML = `
-        <div class="no-individual-poster">
-          🎬
-        </div>
-      `;
-    } else {
-      img.onerror = () => {
-        img.remove();
-        imageContainer.innerHTML = `
-          <div class="no-individual-poster">
-            🎬
-          </div>
-        `;
-      };
-    }
+    // if (individualMovie.Poster === "N/A") {
+    //   img.remove();   
+    //   imageContainer.innerHTML = `
+    //     <div class="no-individual-poster">
+    //       🎬
+    //     </div>
+    //   `;
+    // } else {
+    //   img.onerror = () => {
+    //     img.remove();
+    //     imageContainer.innerHTML = `
+    //       <div class="no-individual-poster">
+    //         🎬
+    //       </div>
+    //     `;
+    //   };
+    // }
         console.log("loadIndividualMovie executed");
 }
 
