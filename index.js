@@ -1045,7 +1045,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
 //Loads the home page after removing the loader
 function loadHomePage(){
     setTimeout(function(){
-      goBackButton.style.visibility="hidden";
+      goBackButton.style.display="none";
         removeLoader();
         console.log("ye loadHomePage function chal gaya ");
         const movieField=createSection(false);       //section is created with favourites set to false
@@ -1059,7 +1059,7 @@ function loadHomePage(){
 
 //for loading individual movies
 async function loadMoviePage(id) {
-  goBackButton.style.visibility="visible";
+  goBackButton.style.display="inline";
     try{
       let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
   
@@ -1169,7 +1169,7 @@ function LoadIndivualMovie(individualMovie){
 
 //Page after searching a movie
 async function loadSearchResults(name) {
-  goBackButton.style.visibility="visible";
+  goBackButton.style.display="inline";
     console.log(name);
     inputField.value = name;
     document.title = `${name} - Results`;
@@ -1278,7 +1278,7 @@ function addToFavourite(imdbID){
 
 //to load all the favourite movies of user
 async function loadFavouritesPage(){
-  goBackButton.style.visibility="visible";
+  goBackButton.style.display="inline";
     document.title="Favourites - Movieflix";
     console.log("Favourites page loaded");
 
