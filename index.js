@@ -804,17 +804,28 @@ const movieapi = {
 ]
 }
 
+
+const favBtn = document.getElementById("fav-button");
+const dragHint = document.querySelector(".fav-movie-text");
+
+const dragPreview = document.createElement("div");
+
+dragPreview.style.padding = "8px";
+dragPreview.style.background = "black";
+dragPreview.style.color = "white";
+dragPreview.style.borderRadius = "6px";
+dragPreview.style.position = "absolute";
+dragPreview.style.top = "-1000px";   // keep it off screen
+dragPreview.style.left = "-1000px";
+
+document.body.appendChild(dragPreview);
 //next 16 lines are making sure that the search functionality is disabled until something is written in the input field
+
 let inputField = document.getElementById("search");
 let searchbutton = document.getElementById('search-button');
-setInterval(function(){          //checks every 0.5 seconds if search field is empty
-  let searchname = inputField.value;
-  if(searchname === ""){
-  searchbutton.disabled = true;
-}
-else{
-  searchbutton.disabled = false;
-}},500);
+inputField.addEventListener("input", () => {
+  searchbutton.disabled = inputField.value.trim() === "";
+});
 
 inputField.addEventListener('keypress',(event)=>{ //click event for search button when enter is pressed
   if(event.key=== "Enter"){
@@ -822,6 +833,10 @@ inputField.addEventListener('keypress',(event)=>{ //click event for search butto
     searchbutton.click();
   }
 });
+
+let goBackButton = document.querySelector(".go-back")
+
+
 
 
 function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
@@ -877,7 +892,7 @@ function createSection(favouritesPage){
     return section;
 }
 
-const favBtn = document.getElementById("fav-button");
+
 
 favBtn.addEventListener("dragover", (e) => {   //drag and drop functionality
     e.preventDefault(); //used to stop browser from blocking drop
@@ -914,7 +929,7 @@ function removeMovieCard(id){
 
 //This function adds movie cards on the movie field section in homepage,search and favs
 function addMovieCard(movie,searched){             //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
-    const movieCard = document.createElement('figure');
+    const movieCard = document.createElement('article');
     movieCard.classList.add('movie-card'); 
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
@@ -936,28 +951,28 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     // console.log(posterExists);
 
     if(searched && posterExists){
-      movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </div>
-            <figcaption class="movie-details">
+      movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+            <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </figcaption>`;
+            </div>`;
     }
     else if(searched && !posterExists){
-      movieCard.innerHTML=`<div class="image-container"><div class="no-poster" alt="${posteralt}">
+      movieCard.innerHTML=`<figure class="image-container"><div class="no-poster" alt="${posteralt}">
           🎬
-        </div> </div>
-            <figcaption class="movie-details">
+        </div> </figure>
+            <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </figcaption>`;
+            </div>`;
     }
     else{
-    movieCard.innerHTML=`<div class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </div>
-            <figcaption class="movie-details">
+    movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+            <div class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
-            </figcaption>`;
+            </div>`;
     }
 
     movieCard.addEventListener("dragstart", (e) => {
@@ -965,6 +980,20 @@ function addMovieCard(movie,searched){             //searched parameters tells i
         "text/plain",
         movie.imdbID
     );
+    favBtn.classList.add("drag-active");
+    // dragHint.innerText = "Drop on Favourites to add ⭐";
+
+    dragPreview.textContent =
+        favBtn.innerText === "Remove"
+            ? `Remove ${movie.Title} from Favourites`
+            : `Add ${movie.Title} to Favourites`;
+
+    e.dataTransfer.setDragImage(dragPreview, 40, 20);
+});
+
+  movieCard.addEventListener("dragend", () => {
+    favBtn.classList.remove("drag-active"); // remove highlight
+    // dragHint.innerText = "Drag your Favourite Movie towards Favourite Button!";
 });
     // ==========================================================
     //no poster image handling
@@ -997,6 +1026,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
 //Loads the home page after removing the loader
 function loadHomePage(){
     setTimeout(function(){
+      goBackButton.style.visibility="hidden";
         removeLoader();
         console.log("ye loadHomePage function chal gaya ");
         const movieField=createSection(false);       //section is created with favourites set to false
@@ -1010,6 +1040,7 @@ function loadHomePage(){
 
 //for loading individual movies
 async function loadMoviePage(id) {
+  goBackButton.style.visibility="visible";
     try{
       let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
   
@@ -1045,8 +1076,8 @@ function LoadIndivualMovie(individualMovie){
 
     if(posterExists)
     {
-      section.innerHTML=`<div class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></div>
-        <div class="movie-overview">
+      section.innerHTML=`<figure class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></figure>
+        <article class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
                 <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
                   <p> <span class="additional-detail-title"> Genre: </span> <br class='mobile-hide'> ${individualMovie.Genre} <br><br> 
@@ -1058,13 +1089,13 @@ function LoadIndivualMovie(individualMovie){
         
             <p class="plot-text">Plot: ${individualMovie.Plot}</p>
             <button id="toggle-fav">${favMessage}</button>
-        </div>`;
+        </article>`;
       }
       else{
-        section.innerHTML=`<div class="individual-movie-poster"><div class="no-individual-poster">
+        section.innerHTML=`<article class="individual-movie-poster"><div class="no-individual-poster">
           🎬
-        </div></div>
-        <div class="movie-overview">
+        </div></article>
+        <article class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
                 <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
                   <p> <span class="additional-detail-title"> Genre: </span> <br class='mobile-hide'> ${individualMovie.Genre} <br><br> 
@@ -1076,7 +1107,7 @@ function LoadIndivualMovie(individualMovie){
         
             <p class="plot-text">Plot: ${individualMovie.Plot}</p>
             <button id="toggle-fav">${favMessage}</button>
-        </div>`;
+        </article>`;
       }
 
     let favButton = document.getElementById('toggle-fav');
@@ -1119,6 +1150,7 @@ function LoadIndivualMovie(individualMovie){
 
 //Page after searching a movie
 async function loadSearchResults(name) {
+  goBackButton.style.visibility="visible";
     console.log(name);
     inputField.value = name;
     document.title = `${name} - Results`;
@@ -1156,7 +1188,7 @@ function loadNoResultPage(){
   console.log("ye loadNoResultPage function chal gaya");
   const movieField=createSection(false);
   document.querySelector(".fav-movie-text").remove();
-  movieField.innerHTML=`<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`
+  movieField.innerHTML=`<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`
 }
 
 function removeLoader(){
@@ -1227,13 +1259,14 @@ function addToFavourite(imdbID){
 
 //to load all the favourite movies of user
 async function loadFavouritesPage(){
+  goBackButton.style.visibility="visible";
     document.title="Favourites - Movieflix";
     console.log("Favourites page loaded");
 
     const movieField = createSection(true);   //true bcz it is favourites page
     console.log(favouriteMoviesID.length);
     if (favouriteMoviesID.length === 0) {      //if no fav movie present
-        movieField.innerHTML = `<div class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></div>`;
+        movieField.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`;
         removeLoader();
         appendMovieField(movieField,true);    
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MovieFlix</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
@@ -12,15 +12,15 @@
     
 </head>
 <body>
-    <header id="headers"><h1><a href="/">🎬 MovieFlix</a></h1>
+    <header id="headers"> <h1><a href="/">🎬 MovieFlix</a></h1>
         <nav>
-            <div class="search-field-div"><input type="text" name="search" id="search" placeholder="Search Movies..."></div>
+            <div class="search-field-div"><button class="go-back" onclick="history.back()">←</button><input type="text" name="search" id="search" placeholder="Search Movies..."></div>
             <div class="buttons"><button id='search-button' onclick="searchMovie()">Search</button> <button id="fav-button" onclick="openFavourites()">Favourites</button></div>
         </nav>
     </header>
     <section class="spinner" id="spinner">
         <div class="loader"></div>
     </section>
-    <script src="test.js"></script>
+    <script src="../index.js"></script>
 </body>
 </html>
