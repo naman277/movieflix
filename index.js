@@ -810,6 +810,32 @@ const dragHint = document.querySelector(".fav-movie-text");
 
 const dragPreview = document.createElement("div");
 
+const dropZone = document.createElement("div");
+
+dropZone.id = "drag-drop-zone";
+dropZone.innerText = "Drop here to add to favourites";
+
+document.body.appendChild(dropZone);
+
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+
+  const imdbID = e.dataTransfer.getData("text/plain");
+
+  if (favBtn.innerText === "Home") {
+    removeMovieCard(imdbID);
+    removeFromFavourite(imdbID);
+  } else {
+    addToFavourite(imdbID);
+  }
+
+  dropZone.classList.remove("active");
+});
+
 dragPreview.style.padding = "8px";
 dragPreview.style.background = "black";
 dragPreview.style.color = "white";
@@ -883,7 +909,7 @@ function createSection(favouritesPage){
         
     }
     if(favouritesPage){  //changes the favourites button to remove button
-      document.getElementById('fav-button').innerText="Remove";
+      document.getElementById('fav-button').innerText="Home";
       document.getElementById('fav-button')
       .addEventListener("click", () => {
       window.location.href = "/";
@@ -894,27 +920,6 @@ function createSection(favouritesPage){
 
 
 
-favBtn.addEventListener("dragover", (e) => {   //drag and drop functionality
-    e.preventDefault(); //used to stop browser from blocking drop
-});
-
-favBtn.addEventListener("drop", (e) => {
-
-    e.preventDefault();
-
-    const imdbID = e.dataTransfer.getData("text/plain");
-
-        if(favBtn.innerText==="Remove"){          //Remove from fav functionality
-            removeMovieCard(imdbID);
-            removeFromFavourite(imdbID);
-        }
-        
-        if(favBtn.innerText==="Favourites"){   //Add to favourites functionality
-            addToFavourite(imdbID);
-        }
-
-    console.log("Added to favourites:", imdbID);
-});
 
 
 //Removes the movie card from favourites page when it dragged towards remove button
@@ -980,19 +985,33 @@ function addMovieCard(movie,searched){             //searched parameters tells i
         "text/plain",
         movie.imdbID
     );
-    favBtn.classList.add("drag-active");
+    // favBtn.classList.add("drag-active");
     // dragHint.innerText = "Drop on Favourites to add ⭐";
-
+    // document.querySelector(".movie-tiles-field").classList.add("dragging");
+    // document.querySelector("#headers").classList.add("dragging");
+    // document.body.style.opacity=0.5;
+    document.querySelector(".movie-tiles-field").style.opacity=0.5;
+    document.querySelector("#headers").style.opacity=0.5;
+    dropZone.classList.add("active");
+    dropZone.innerText = favBtn.innerText === "Home"? `Drop here to remove from Favourites`: `Drop here to Add to Favourites`;
     dragPreview.textContent =
-        favBtn.innerText === "Remove"
-            ? `Remove ${movie.Title} from Favourites`
-            : `Add ${movie.Title} to Favourites`;
-
+    favBtn.innerText === "Home"
+    ? `Remove ${movie.Title} from Favourites`
+    : `Add ${movie.Title} to Favourites`;
+    
     e.dataTransfer.setDragImage(dragPreview, 40, 20);
-});
-
+  });
+  
   movieCard.addEventListener("dragend", () => {
-    favBtn.classList.remove("drag-active"); // remove highlight
+    // document.querySelector(".movie-tiles-field").classList.remove("dragging");
+    document.querySelector(".movie-tiles-field").style.opacity=1;
+    document.querySelector("#headers").style.opacity=1;
+    // document.querySelector("#headers").classList.remove("dragging");
+    
+    dropZone.classList.remove("active");
+    // document.body.style.opacity=1;
+
+    // favBtn.classList.remove("drag-active"); // remove highlight
     // dragHint.innerText = "Drag your Favourite Movie towards Favourite Button!";
 });
     // ==========================================================
@@ -1303,7 +1322,7 @@ function appendMovieField(movieField,favouritesPage){  //favouritesPage paramete
     header.insertAdjacentElement('afterend',br);
     const favLine=document.createElement("p");
     favLine.classList.add('fav-movie-text');
-    if(!favouritesPage) favLine.innerText="Drag your Favourite Movie towards Favourite Button!";  
-    else favLine.innerText="Drag a movie towards Remove Button to remove it from Favourites!";
+    if(!favouritesPage) favLine.innerText="Try to drag your Favourite Movie!";  
+    else favLine.innerText="Drag a movie to remove it from Favourites!";
     movieField.insertAdjacentElement("afterend",favLine);
 }
