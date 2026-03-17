@@ -932,7 +932,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     })
     movieCard.tabIndex=0;
     movieCard.draggable=true;
-    movieCard.role="button";
+    // movieCard.role="button";
     movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
     movieCard.dataset.id = movie.imdbID;
 
