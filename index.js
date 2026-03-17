@@ -804,35 +804,31 @@ const movieapi = {
 ]
 }
 
-
 const favBtn = document.getElementById("fav-button");
 const dragHint = document.querySelector(".fav-movie-text");
-
 const dragPreview = document.createElement("div");
-
 const dropZone = document.createElement("div");
+let inputField = document.getElementById("search");
+let searchbutton = document.getElementById('search-button');
+let goBackButton = document.querySelector(".go-back")
+let favouriteMoviesID = JSON.parse(localStorage.getItem("favourite")) || []; //storing movie names in localstorage
 
 dropZone.id = "drag-drop-zone";
 dropZone.innerText = "Drop here to add to favourites";
-
 document.body.appendChild(dropZone);
 
 dropZone.addEventListener("dragover", (e) => {
   e.preventDefault();
 });
-
 dropZone.addEventListener("drop", (e) => {
   e.preventDefault();
-
   const imdbID = e.dataTransfer.getData("text/plain");
-
   if (favBtn.innerText === "Home") {
     removeMovieCard(imdbID);
     removeFromFavourite(imdbID);
   } else {
     addToFavourite(imdbID);
   }
-
   dropZone.classList.remove("active");
 });
 
@@ -843,12 +839,9 @@ dragPreview.style.borderRadius = "6px";
 dragPreview.style.position = "absolute";
 dragPreview.style.top = "-1000px";   // keep it off screen
 dragPreview.style.left = "-1000px";
-
 document.body.appendChild(dragPreview);
-//next 16 lines are making sure that the search functionality is disabled until something is written in the input field
 
-let inputField = document.getElementById("search");
-let searchbutton = document.getElementById('search-button');
+//next 10 lines are making sure that the search functionality is disabled until something is written in the input field
 inputField.addEventListener("input", () => {
   searchbutton.disabled = inputField.value.trim() === "";
 });
@@ -859,11 +852,6 @@ inputField.addEventListener('keypress',(event)=>{ //click event for search butto
     searchbutton.click();
   }
 });
-
-let goBackButton = document.querySelector(".go-back")
-
-
-
 
 function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
     const inputField = document.getElementById("search");
@@ -918,10 +906,6 @@ function createSection(favouritesPage){
     return section;
 }
 
-
-
-
-
 //Removes the movie card from favourites page when it dragged towards remove button
 function removeMovieCard(id){
     const card = document.querySelector(
@@ -948,12 +932,14 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     })
     movieCard.tabIndex=0;
     movieCard.draggable=true;
+    movieCard.role="button";
+    movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
     movieCard.dataset.id = movie.imdbID;
 
-    let posteralt = `Poster of ${movie.Title}`;
+    let posteralt = `${movie.Title} Movie Poster`;
 
     let posterExists = URL.canParse(movie.Poster);
-    // console.log(posterExists);
+    console.log(posterExists);
 
     if(searched && posterExists){
       movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
@@ -963,13 +949,21 @@ function addMovieCard(movie,searched){             //searched parameters tells i
             </div>`;
     }
     else if(searched && !posterExists){
-      movieCard.innerHTML=`<figure class="image-container"><div class="no-poster" alt="${posteralt}">
-          🎬
-        </div> </figure>
+      movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
+</figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
             </div>`;
+    }
+    else if(!posterExists){
+    movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div> </figure>
+            <div class="movie-details">
+                <h2>${movie.Title}</h2>
+                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
+                <p class='card-plot'>${movie.Plot}</p>
+            </div>`;
+    
     }
     else{
     movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
@@ -1053,8 +1047,61 @@ function loadHomePage(){
         movieapi.data.forEach(function(movie){
             const movieCard = addMovieCard(movie,false);
             movieField.appendChild(movieCard);
-        })
+        });
+        addArrowNavigation();
     },500)
+}
+
+function addArrowNavigation() {
+  const movieCards = [...document.querySelectorAll(".movie-card")];
+        // console.log(movieCards);
+        movieCards.forEach(item => {
+          item.addEventListener("keydown", e => {
+            let direction = null;
+
+            if (e.key === "ArrowRight") direction = "right";
+            if (e.key === "ArrowLeft") direction = "left";
+            if (e.key === "ArrowDown") direction = "down";
+            if (e.key === "ArrowUp") direction = "up";
+
+            if (!direction) return;
+
+            const next = findNext(item, direction);
+            if (next) next.focus();
+          });
+        });
+}
+
+function findNext(current, direction) {
+  const currentRect = current.getBoundingClientRect();
+  let best = null;
+  let bestDistance = Infinity;
+  const movieCards = [...document.querySelectorAll(".movie-card")];
+  movieCards.forEach(el => {
+    if (el === current) return;
+
+    const rect = el.getBoundingClientRect();
+
+    const dx = rect.left - currentRect.left;
+    const dy = rect.top - currentRect.top;
+
+    const valid =
+      (direction === "right" && dx > 0 && Math.abs(dy) < rect.height) ||
+      (direction === "left" && dx < 0 && Math.abs(dy) < rect.height) ||
+      (direction === "down" && dy > 0) ||
+      (direction === "up" && dy < 0);
+
+    if (!valid) return;
+
+    const distance = Math.hypot(dx, dy);
+
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = el;
+    }
+  });
+
+  return best;
 }
 
 //for loading individual movies
@@ -1092,10 +1139,10 @@ function LoadIndivualMovie(individualMovie){
     }
 
     let posterExists = URL.canParse(individualMovie.Poster);
-
+    let posteralt = `${individualMovie.Title} Movie Poster`;
     if(posterExists)
     {
-      section.innerHTML=`<figure class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="🎬"></figure>
+      section.innerHTML=`<figure class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="${posteralt}"></figure>
         <article class="movie-overview">
                 <h2>${individualMovie.Title}</h2>
                 <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
@@ -1111,7 +1158,7 @@ function LoadIndivualMovie(individualMovie){
         </article>`;
       }
       else{
-        section.innerHTML=`<article class="individual-movie-poster"><div class="no-individual-poster">
+        section.innerHTML=`<article class="individual-movie-poster"><div class="no-individual-poster" role="img" aria-label="No poster available for ${individualMovie.Title} movie">
           🎬
         </div></article>
         <article class="movie-overview">
@@ -1198,12 +1245,12 @@ function loadSearchResultsPage(movieList){
         const movieCard = addMovieCard(movie,true);
         movieField.appendChild(movieCard);
     })
+    addArrowNavigation();
+    
 }
-
 
 function loadNoResultPage(){
   document.title="No Results Found - Movieflix"
- 
   console.log("ye loadNoResultPage function chal gaya");
   const movieField=createSection(false);
   document.querySelector(".fav-movie-text").remove();
@@ -1216,17 +1263,11 @@ function removeLoader(){
 }
 
 //favourites logic
-
-//storing movie names in localstorage
-let favouriteMoviesID =
-    JSON.parse(localStorage.getItem("favourite")) || [];
-
 //called when favourites button is clicked
 function openFavourites(){
     window.location.href = `?page=favourites`;
-    document.getElementById('fav-button').innerText="Remove";
+    document.getElementById('fav-button').innerText="Home";
 }
-
 
 function removeFromFavourite(imdbID){
   console.log("Remove");
@@ -1245,7 +1286,6 @@ function removeFromFavourite(imdbID){
   }
 }
 
-
 function addToFavourite(imdbID){
     console.log("Add");
     if (favouriteMoviesID.includes(imdbID)) { //if movie is already in favs, then no need to add it again
@@ -1258,23 +1298,21 @@ function addToFavourite(imdbID){
         "favourite",
         JSON.stringify(favouriteMoviesID)
     );
+    
 }
 
 // function toggleFavourite(id) {
-
 //     if (favouriteMoviesID.includes(id)) {
 //         favouriteMoviesID =
 //             favouriteMoviesID.filter(item => item !== id);
 //     } else {
 //         favouriteMoviesID.push(id);
 //     }
-
     // localStorage.setItem(
     //     "favourite",
     //     JSON.stringify(favouriteMoviesID)
     // );
 // }
-
 
 //to load all the favourite movies of user
 async function loadFavouritesPage(){
@@ -1311,6 +1349,7 @@ async function loadFavouritesPage(){
     }
     removeLoader();
     appendMovieField(movieField,true);
+    addArrowNavigation();
     
 }
 
