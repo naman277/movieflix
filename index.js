@@ -966,22 +966,14 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     let posteralt = `${movie.Title} Movie Poster`;
 
     let posterExists = URL.canParse(movie.Poster);
-    // console.log(posterExists);
+    console.log(posterExists);
 
     if(searched && posterExists){
-      try{movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
-                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </div>`;}
-      catch(error){
-        movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
-</figure>
+      movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
             </div>`;
-      }
     }
     else if(searched && !posterExists){
       movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
@@ -1094,26 +1086,17 @@ function addMovieCard(movie,searched){             //searched parameters tells i
 });
     // ==========================================================
     //no poster image handling
-    // const img = movieCard.querySelector(".poster");
-    // const imageContainer = movieCard.querySelector(".image-container");
+    const img = movieCard.querySelector(".poster");
+    const imageContainer = movieCard.querySelector(".image-container");
 
-    // if (movie.Poster === "N/A") {
-    //   img.remove();   
-    //   imageContainer.innerHTML = `
-    //     <div class="no-poster" alt="${movie.Title}">
-    //       🎬
-    //     </div>
-    //   `;
-    // } else {
-    //   img.onerror = () => {
-    //     img.remove();
-    //     imageContainer.innerHTML = `
-    //       <div class="no-poster" alt="${movie.Title}">
-    //         🎬
-    //       </div>
-    //     `;
-    //   };
-    // }
+    
+      img.onerror = () => {
+        img.remove();
+        imageContainer.innerHTML = `
+          <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
+        `;
+      };
+    
     
 
 // =======================================================
@@ -1278,23 +1261,15 @@ function LoadIndivualMovie(individualMovie){
       const img = section.querySelector("img");
     const imageContainer = section.querySelector(".individual-movie-poster");
 
-    // if (individualMovie.Poster === "N/A") {
-    //   img.remove();   
-    //   imageContainer.innerHTML = `
-    //     <div class="no-individual-poster">
-    //       🎬
-    //     </div>
-    //   `;
-    // } else {
-    //   img.onerror = () => {
-    //     img.remove();
-    //     imageContainer.innerHTML = `
-    //       <div class="no-individual-poster">
-    //         🎬
-    //       </div>
-    //     `;
-    //   };
-    // }
+      img.onerror = () => {
+        img.remove();
+        imageContainer.innerHTML = `
+          <div class="no-individual-poster" role="img" aria-label="No poster available for ${individualMovie.Title} movie">
+          🎬
+        </div>
+        `;
+      };
+    
         console.log("loadIndividualMovie executed");
 }
 
