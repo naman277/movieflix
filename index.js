@@ -825,11 +825,17 @@ dropZone.addEventListener("dragover", (e) => {
 dropZone.addEventListener("drop", (e) => {
   e.preventDefault();
   const imdbID = e.dataTransfer.getData("text/plain");
-  if (favBtn.innerText === "Home") {
-    removeMovieCard(imdbID);
+  const movieCard = document.querySelector(`.movie-card[data-id="${imdbID}"]`);
+  console.log(movieCard);
+  if (favouriteMoviesID.includes(imdbID)) {
+    if(window.location.search.includes("page=favourites")){
+      removeMovieCard(imdbID);
+    }
     removeFromFavourite(imdbID);
+    movieCard.querySelector(".rating-star").innerText = "☆"; // Change to empty star
   } else {
     addToFavourite(imdbID);
+    movieCard.querySelector(".rating-star").innerText = "★"; // Change to filled star
   }
   dropZone.classList.remove("active");
 });
@@ -1012,6 +1018,9 @@ function addMovieCard(movie,searched){             //searched parameters tells i
                 favIcon.innerText = "☆";
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
+              if(window.location.search.includes("page=favourites")){
+                removeMovieCard(movie.imdbID);
+              } // remove the movie card from fav page when removed from favourites
               }
               favModal.querySelector("#cancel-add").onclick = () => {
                 favModal.classList.add("modal-hidden");
@@ -1050,7 +1059,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     document.querySelector(".movie-tiles-field").style.opacity=0.5;
     document.querySelector("#headers").style.opacity=0.5;
     dropZone.classList.add("active");
-    dropZone.innerText = favBtn.innerText === "Home"? `Drop here to remove from Favourites`: `Drop here to Add to Favourites`;
+    dropZone.innerText = favouriteMoviesID.includes(movie.imdbID)? `Drop here to remove from Favourites`: `Drop here to Add to Favourites`;
     dragPreview.textContent =
     favBtn.innerText === "Home"
     ? `Remove ${movie.Title} from Favourites`
