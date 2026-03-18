@@ -1041,7 +1041,7 @@ function loadHomePage(){
     setTimeout(function(){
       goBackButton.style.display="none";
         removeLoader();
-        console.log("ye loadHomePage function chal gaya ");
+        console.log("loadHomePage function executed ");
         const movieField=createSection(false);       //section is created with favourites set to false
 
         movieapi.data.forEach(function(movie){
@@ -1239,7 +1239,7 @@ async function loadSearchResults(name) {
 
 function loadSearchResultsPage(movieList){
     removeLoader();
-    console.log("ye loadSearchResultsPage function chal gaya");
+    console.log("loadSearchResultsPage function executed");
     const movieField=createSection(false);     //false bcz no fav page
     movieList.Search.forEach((movie) => {
         const movieCard = addMovieCard(movie,true);
@@ -1251,7 +1251,7 @@ function loadSearchResultsPage(movieList){
 
 function loadNoResultPage(){
   document.title="No Results Found - Movieflix"
-  console.log("ye loadNoResultPage function chal gaya");
+  console.log("loadNoResultPage function executed");
   const movieField=createSection(false);
   document.querySelector(".fav-movie-text").remove();
   movieField.innerHTML=`<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`
@@ -1300,19 +1300,6 @@ function addToFavourite(imdbID){
     );
     
 }
-
-// function toggleFavourite(id) {
-//     if (favouriteMoviesID.includes(id)) {
-//         favouriteMoviesID =
-//             favouriteMoviesID.filter(item => item !== id);
-//     } else {
-//         favouriteMoviesID.push(id);
-//     }
-    // localStorage.setItem(
-    //     "favourite",
-    //     JSON.stringify(favouriteMoviesID)
-    // );
-// }
 
 //to load all the favourite movies of user
 async function loadFavouritesPage(){
