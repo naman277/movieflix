@@ -6,6 +6,53 @@ body{
     /* opacity: 1; */
 }
 
+#fav-modal{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1d283a;
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    z-index: 1001;
+    box-shadow: 0 50px 150px 60px #0a0a0b, 0 0px 50px 6px #0a0a0b; 
+    transition: all 0.3s ease;
+}
+
+.modal-hidden{
+    opacity: 0;
+    visibility: hidden;
+    
+}
+
+.modal-show{
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);    
+}
+
+#close-button{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.modal-button{
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 0.5rem;
+    text-decoration: none;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;

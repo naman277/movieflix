@@ -808,10 +808,12 @@ const favBtn = document.getElementById("fav-button");
 const dragHint = document.querySelector(".fav-movie-text");
 const dragPreview = document.createElement("div");
 const dropZone = document.createElement("div");
+const favModal = document.createElement("div");
 let inputField = document.getElementById("search");
 let searchbutton = document.getElementById('search-button');
 let goBackButton = document.querySelector(".go-back")
 let favouriteMoviesID = JSON.parse(localStorage.getItem("favourite")) || []; //storing movie names in localstorage
+
 
 dropZone.id = "drag-drop-zone";
 dropZone.innerText = "Drop here to add to favourites";
@@ -840,6 +842,21 @@ dragPreview.style.position = "absolute";
 dragPreview.style.top = "-1000px";   // keep it off screen
 dragPreview.style.left = "-1000px";
 document.body.appendChild(dragPreview);
+
+favModal.id = "fav-modal";
+favModal.classList.add("modal-hidden");       //change this to modal-hidden 
+favModal.innerHTML = `<div class="modal-content">
+  <span id="close-button">&times;</span>
+  <p id="modal-text">Do you want to add this movie to your favourites?</p>
+  <button class="modal-button" id="confirm-add">Yes</button>
+  <button class="modal-button" id="cancel-add">No</button>
+</div>`;
+
+favModal.querySelector("#close-button").addEventListener("click", () => {
+  favModal.classList.add("modal-hidden");
+  favModal.classList.remove("modal-show");
+});
+document.body.appendChild(favModal);
 
 //next 10 lines are making sure that the search functionality is disabled until something is written in the input field
 inputField.addEventListener("input", () => {
@@ -939,7 +956,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     let posteralt = `${movie.Title} Movie Poster`;
 
     let posterExists = URL.canParse(movie.Poster);
-    console.log(posterExists);
+    // console.log(posterExists);
 
     if(searched && posterExists){
       movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
@@ -978,18 +995,44 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     if(!searched){
       // console.log(favIcon);
       if(favouriteMoviesID.includes(movie.imdbID)){
-          console.log(`${movie.Title} is added to favs`);
+          // console.log(`${movie.Title} is added to favs`);
           // favIcon.classList.add("favourited");
           favIcon.innerText = "★";
       }
       favIcon.addEventListener("click", (e) => {
           e.stopPropagation();      
           if (favouriteMoviesID.includes(movie.imdbID)) {
-              removeFromFavourite(movie.imdbID);
-              favIcon.innerText = "☆";
+              // removeFromFavourite(movie.imdbID);
+              // favIcon.innerText = "☆";
+              favModal.querySelector("#modal-text").innerText = `Do you want to remove ${movie.Title} from your favourites?`;
+              favModal.classList.remove("modal-hidden");
+              favModal.classList.add("modal-show");
+              favModal.querySelector("#confirm-add").onclick = () => {
+                removeFromFavourite(movie.imdbID);
+                favIcon.innerText = "☆";
+                favModal.classList.add("modal-hidden");
+                favModal.classList.remove("modal-show");
+              }
+              favModal.querySelector("#cancel-add").onclick = () => {
+                favModal.classList.add("modal-hidden");
+                favModal.classList.remove("modal-show");
+              };
           } else {
-              addToFavourite(movie.imdbID);
-              favIcon.innerText = "★";
+              favModal.querySelector("#modal-text").innerText = `Do you want to add ${movie.Title} to your favourites?`;
+              favModal.classList.remove("modal-hidden");
+              favModal.classList.add("modal-show");
+              favModal.querySelector("#confirm-add").onclick = () => {
+                addToFavourite(movie.imdbID);
+                favIcon.innerText = "★";
+                favModal.classList.add("modal-hidden");
+                favModal.classList.remove("modal-show");
+              } 
+              favModal.querySelector("#cancel-add").onclick = () => {
+                favModal.classList.add("modal-hidden");
+                favModal.classList.remove("modal-show");
+              }
+              // addToFavourite(movie.imdbID);
+              // favIcon.innerText = "★";
           } 
       });
     }
