@@ -826,16 +826,20 @@ dropZone.addEventListener("drop", (e) => {
   e.preventDefault();
   const imdbID = e.dataTransfer.getData("text/plain");
   const movieCard = document.querySelector(`.movie-card[data-id="${imdbID}"]`);
-  console.log(movieCard);
+  // console.log(movieCard);
   if (favouriteMoviesID.includes(imdbID)) {
     if(window.location.search.includes("page=favourites")){
       removeMovieCard(imdbID);
     }
     removeFromFavourite(imdbID);
-    movieCard.querySelector(".rating-star").innerText = "☆"; // Change to empty star
+    if(!window.location.search.includes("query=")){
+      movieCard.querySelector(".rating-star").innerText = "☆"; // Change to empty star
+      }
   } else {
     addToFavourite(imdbID);
-    movieCard.querySelector(".rating-star").innerText = "★"; // Change to filled star
+    if(!window.location.search.includes("query=")){
+      movieCard.querySelector(".rating-star").innerText = "★"; // Change to filled star
+      }
   }
   dropZone.classList.remove("active");
 });
@@ -965,11 +969,19 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     // console.log(posterExists);
 
     if(searched && posterExists){
-      movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+      try{movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+            <div class="movie-details">
+                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
+                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
+            </div>`;}
+      catch(error){
+        movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
+</figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
             </div>`;
+      }
     }
     else if(searched && !posterExists){
       movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
