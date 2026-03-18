@@ -804,90 +804,115 @@ const movieapi = {
 ]
 }
 
-const favBtn = document.getElementById("fav-button");
-const dragHint = document.querySelector(".fav-movie-text");
-const dragPreview = document.createElement("div");
-const dropZone = document.createElement("div");
-let inputField = document.getElementById("search");
-let searchbutton = document.getElementById('search-button');
-let goBackButton = document.querySelector(".go-back")
-let favouriteMoviesID = JSON.parse(localStorage.getItem("favourite")) || []; //storing movie names in localstorage
-
-dropZone.id = "drag-drop-zone";
-dropZone.innerText = "Drop here to add to favourites";
-document.body.appendChild(dropZone);
-
-dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-});
-dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const imdbID = e.dataTransfer.getData("text/plain");
-    if (favBtn.innerText === "Home") {
-        removeMovieCard(imdbID);
-        removeFromFavourite(imdbID);
-    } else {
-        addToFavourite(imdbID);
-    }
-    dropZone.classList.remove("active");
-});
-
-dragPreview.style.padding = "8px";
-dragPreview.style.background = "black";
-dragPreview.style.color = "white";
-dragPreview.style.borderRadius = "6px";
-dragPreview.style.position = "absolute";
-dragPreview.style.top = "-1000px";   // keep it off screen
-dragPreview.style.left = "-1000px";
-document.body.appendChild(dragPreview);
-
-//next 10 lines are making sure that the search functionality is disabled until something is written in the input field
-inputField.addEventListener("input", () => {
-searchbutton.disabled = inputField.value.trim() === "";
-});
-
-inputField.addEventListener('keypress',(event)=>{ //click event for search button when enter is pressed
-if(event.key=== "Enter"){
-    event.preventDefault();
-    searchbutton.click();
-}
-});
-
-function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
-    const inputField = document.getElementById("search");
-    let name = inputField.value;
-    name = name.trimStart();
-    name = name.replace(/\s+/g, ' ').trim();
-    name = name.replace(/\s+/g, '%20');
-    console.log(name); 
-    window.location.href = `?query=${name}`;
-}
-
-document.addEventListener("DOMContentLoaded",() => {   //always checks for the parameters in the URL
-    const params = new URLSearchParams(document.location.search);
-    const id = params.get('movieID');
-    let name = params.get('query');
-    let page = params.get('page');
+// document.addEventListener("DOMContentLoaded",() => {   //always checks for the parameters in the URL
+//     const params = new URLSearchParams(document.location.search);
+//     const id = params.get('movieID');
+//     let name = params.get('query');
+//     let page = params.get('page');
     
-    //When URL contains imdbID of the movie, then the movie page is opened
-    if(id){ 
-        loadMoviePage(id);
-    }
-    //when a movie is searched
-    else if(name){
-        loadSearchResults(name);
-    }
-    //when favourites page is opened
-    else if(page=="favourites"){
-        loadFavouritesPage();
-    }
-    //homepage
-    else{
-        loadHomePage();
-    }
-})
+//     //When URL contains imdbID of the movie, then the movie page is opened
+//     if(id){ 
+//         loadMoviePage(id);
+//     }
+//     //when a movie is searched
+//     else if(name){
+//         loadSearchResults(name);
+//     }
+//     //when favourites page is opened
+//     else if(page=="favourites"){
+//         loadFavouritesPage();
+//     }
+//     //homepage
+//     else{
+//         loadHomePage();
+//     }
+// })
 
-//This function creates the movie tiles field where all the movie cards are displayed. This method is called on homepage/search results page/favourites page
+class Movie{
+    constructor(movieData){
+        this.title = movieData.Title;
+        this.year = movieData.Year;
+        this.rated = movieData.Rated;
+        this.released = movieData.Released;
+        this.runtime = movieData.Runtime;
+        this.genre = movieData.Genre;
+        this.director = movieData.Director;
+        this.writer = movieData.Writer; 
+        this.actors = movieData.Actors;
+        this.plot = movieData.Plot;
+        this.language = movieData.Language;
+        this.country = movieData.Country;
+        this.awards = movieData.Awards;
+        this.poster = movieData.Poster;
+        this.ratings = movieData.Ratings;
+        this.metascore = movieData.Metascore;
+        this.imdbRating = movieData.imdbRating;
+        this.imdbVotes = movieData.imdbVotes;
+        this.imdbID = movieData.imdbID;
+    }
+
+    createMovieCard(searched){
+        const movieCard = document.createElement("div");
+        movieCard.classList.add("movie-card");
+        movieCard.tabIndex=0;
+        movieCard.draggable=true;
+        movieCard.setAttribute("aria-label", `View details for ${this.title} movie`);
+        movieCard.dataset.id = this.imdbID;
+        let posteralt = `${this.title} Movie Poster`;
+        let posterExists = URL.canParse(this.poster);
+        if(searched && posterExists){
+        movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${this.poster}" alt="${posteralt}"> </figure>
+                <div class="movie-details">
+                    <h2>${this.title}</h2> <br class="mobile-show"> <br>
+                    <h2 class="searched-movie-details">${this.year} - ${this.type}</h2>         
+                </div>`;
+        }
+        else if(searched && !posterExists){
+        movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${this.title} movie">🎬</div>
+    </figure>
+                <div class="movie-details">
+                    <h2>${this.title}</h2> <br class="mobile-show"> <br>
+                    <h2 class="searched-movie-details">${this.year} - ${this.type}</h2>         
+                </div>`;
+        }
+        else if(!posterExists){
+        movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${this.title} movie">🎬</div> </figure>
+                <div class="movie-details">
+                    <h2>${this.title}</h2>
+                    <p>${this.year} - ⭐ ${this.imdbRating}</p>
+                    <p class='card-plot'>${this.plot}</p>
+                </div>`;
+        
+        }
+        else{
+        movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${this.poster}" alt="${posteralt}"> </figure>
+                <div class="movie-details">
+                    <h2>${this.title}</h2>
+                    <p>${this.year} - ⭐ ${this.imdbRating}</p>
+                    <p class='card-plot'>${this.plot}</p>
+                </div>`;
+        }
+        return movieCard;
+    }
+
+}
+
+function removeLoader(){
+    const load = document.getElementById("spinner");
+    load.remove();
+}
+
+setTimeout(function(){
+    // goBackButton.style.display="none";
+    removeLoader();
+    console.log("loadHomePage function executed ");
+    const movieField=createSection(false); 
+    movieapi.data.forEach(element => {
+        const movie = new Movie(element);
+        movieField.appendChild(movie.createMovieCard());
+    });
+},500)
+
 function createSection(favouritesPage){
     
     const section = document.createElement('section');
@@ -897,423 +922,15 @@ function createSection(favouritesPage){
         
     }
     if(favouritesPage){  //changes the favourites button to remove button
-    document.getElementById('fav-button').innerText="Home";
-    document.getElementById('fav-button')
-    .addEventListener("click", () => {
-    window.location.href = "/";
+        document.getElementById('fav-button').innerText="Home";
+        document.getElementById('fav-button')
+        .addEventListener("click", () => {
+        window.location.href = "/";
     });
     }
     return section;
 }
 
-//Removes the movie card from favourites page when it dragged towards remove button
-function removeMovieCard(id){
-    const card = document.querySelector(
-        `.movie-card[data-id="${id}"]`
-    );
-
-    if (card) {
-        card.remove();
-    }}
-
-//This function adds movie cards on the movie field section in homepage,search and favs
-function addMovieCard(movie,searched){             //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
-    const movieCard = document.createElement('article');
-    movieCard.classList.add('movie-card'); 
-    movieCard.style.cursor='pointer';
-    movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
-        window.location.href=`?movieID=${movie.imdbID}`;
-    })
-    movieCard.addEventListener('keypress',(event) =>{   //when a movie is selected using tab key, pressing enter redirects to the selected movie
-    if(event.key==="Enter"){
-        event.preventDefault();
-        movieCard.click();
-    }
-    })
-    movieCard.tabIndex=0;
-    movieCard.draggable=true;
-    // movieCard.role="button";
-    movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
-    movieCard.dataset.id = movie.imdbID;
-
-    let posteralt = `${movie.Title} Movie Poster`;
-
-    let posterExists = URL.canParse(movie.Poster);
-    console.log(posterExists);
-
-    if(searched && posterExists){
-    movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
-                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </div>`;
-    }
-    else if(searched && !posterExists){
-    movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
-</figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
-                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </div>`;
-    }
-    else if(!posterExists){
-    movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div> </figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2>
-                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
-                <p class='card-plot'>${movie.Plot}</p>
-            </div>`;
-    
-    }
-    else{
-    movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2>
-                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
-                <p class='card-plot'>${movie.Plot}</p>
-            </div>`;
-    }
-
-    movieCard.addEventListener("dragstart", (e) => {
-    e.dataTransfer.setData(
-        "text/plain",
-        movie.imdbID
-    );
-    document.querySelector(".movie-tiles-field").style.opacity=0.5;
-    document.querySelector("#headers").style.opacity=0.5;
-    dropZone.classList.add("active");
-    dropZone.innerText = favBtn.innerText === "Home"? `Drop here to remove from Favourites`: `Drop here to Add to Favourites`;
-    dragPreview.textContent =
-    favBtn.innerText === "Home"
-    ? `Remove ${movie.Title} from Favourites`
-    : `Add ${movie.Title} to Favourites`;
-    
-    e.dataTransfer.setDragImage(dragPreview, 40, 20);
-});
-
-movieCard.addEventListener("dragend", () => {
-    // document.querySelector(".movie-tiles-field").classList.remove("dragging");
-    document.querySelector(".movie-tiles-field").style.opacity=1;
-    document.querySelector("#headers").style.opacity=1;
-    // document.querySelector("#headers").classList.remove("dragging");
-    
-    dropZone.classList.remove("active");
-    // document.body.style.opacity=1;
-
-    // favBtn.classList.remove("drag-active"); // remove highlight
-    // dragHint.innerText = "Drag your Favourite Movie towards Favourite Button!";
-});
-    // ==========================================================
-    //no poster image handling
-    // const img = movieCard.querySelector(".poster");
-    // const imageContainer = movieCard.querySelector(".image-container");
-
-    // if (movie.Poster === "N/A") {
-    //   img.remove();   
-    //   imageContainer.innerHTML = `
-    //     <div class="no-poster" alt="${movie.Title}">
-    //       🎬
-    //     </div>
-    //   `;
-    // } else {
-    //   img.onerror = () => {
-    //     img.remove();
-    //     imageContainer.innerHTML = `
-    //       <div class="no-poster" alt="${movie.Title}">
-    //         🎬
-    //       </div>
-    //     `;
-    //   };
-    // }
-    
-
-// =======================================================
-    return movieCard;
-}
-
-//Loads the home page after removing the loader
-function loadHomePage(){
-    setTimeout(function(){
-    goBackButton.style.display="none";
-        removeLoader();
-        console.log("ye loadHomePage function chal gaya ");
-        const movieField=createSection(false);       //section is created with favourites set to false
-
-        movieapi.data.forEach(function(movie){
-            const movieCard = addMovieCard(movie,false);
-            movieField.appendChild(movieCard);
-        });
-        addArrowNavigation();
-    },500)
-}
-
-function addArrowNavigation() {
-const movieCards = [...document.querySelectorAll(".movie-card")];
-        // console.log(movieCards);
-        movieCards.forEach(item => {
-        item.addEventListener("keydown", e => {
-            let direction = null;
-
-            if (e.key === "ArrowRight") direction = "right";
-            if (e.key === "ArrowLeft") direction = "left";
-            if (e.key === "ArrowDown") direction = "down";
-            if (e.key === "ArrowUp") direction = "up";
-
-            if (!direction) return;
-
-            const next = findNext(item, direction);
-            if (next) next.focus();
-        });
-        });
-}
-
-function findNext(current, direction) {
-const currentRect = current.getBoundingClientRect();
-let best = null;
-let bestDistance = Infinity;
-const movieCards = [...document.querySelectorAll(".movie-card")];
-movieCards.forEach(el => {
-    if (el === current) return;
-
-    const rect = el.getBoundingClientRect();
-
-    const dx = rect.left - currentRect.left;
-    const dy = rect.top - currentRect.top;
-
-    const valid =
-    (direction === "right" && dx > 0 && Math.abs(dy) < rect.height) ||
-    (direction === "left" && dx < 0 && Math.abs(dy) < rect.height) ||
-    (direction === "down" && dy > 0) ||
-    (direction === "up" && dy < 0);
-
-    if (!valid) return;
-
-    const distance = Math.hypot(dx, dy);
-
-    if (distance < bestDistance) {
-    bestDistance = distance;
-    best = el;
-    }
-});
-
-return best;
-}
-
-//for loading individual movies
-async function loadMoviePage(id) {
-goBackButton.style.display="inline";
-    try{
-    let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
-
-    let individualMovie = await Movie.json();
-    console.log("loadMoviePage executed");
-    LoadIndivualMovie(individualMovie);
-    }
-    catch(e){
-    console.log("Couldn't Load Movie: ",e);
-    
-    }
-}
-
-function LoadIndivualMovie(individualMovie){
-document.title = `${individualMovie.Title} - Movieflix`
-    removeLoader();
-    const section = document.createElement('section');
-    section.classList.add("movie-page");
-    const br = document.createElement('br');
-    const header = document.getElementById('headers');
-    header.insertAdjacentElement('afterend',section);
-    header.insertAdjacentElement('afterend',br);
-    let favMessage;
-    
-    //add to fav or remove from fav button accordingly if it is in fav or not
-        if (favouriteMoviesID.includes(individualMovie.imdbID)) {               
-        favMessage="Remove from Favourites";
-    } else {
-        favMessage = "Add to Favourites";
-    }
-
-    let posterExists = URL.canParse(individualMovie.Poster);
-    let posteralt = `${individualMovie.Title} Movie Poster`;
-    if(posterExists)
-    {
-    section.innerHTML=`<figure class="individual-movie-poster"><img src="${individualMovie.Poster}" alt="${posteralt}"></figure>
-        <article class="movie-overview">
-                <h2>${individualMovie.Title}</h2>
-                <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
-                <p> <span class="additional-detail-title"> Genre: </span> <br class='mobile-hide'> ${individualMovie.Genre} <br><br> 
-                <span class="additional-detail-title"> Director: </span> <br class='mobile-hide'>${individualMovie.Director} <br><br> 
-                <span class="additional-detail-title"> Release Date: </span> <br class='mobile-hide'> ${individualMovie.Released} <br><br>
-                <span class="additional-detail-title"> Runtime: </span> <br class='mobile-hide'> ${individualMovie.Runtime} <br><br>
-                <span class="additional-detail-title"> Awards: </span> <br class='mobile-hide'> ${individualMovie.Awards} <br><br>
-                <span class="additional-detail-title"> Cast: </span> <br class='mobile-hide'> ${individualMovie.Actors} </p>
-        
-            <p class="plot-text">Plot: ${individualMovie.Plot}</p>
-            <button id="toggle-fav">${favMessage}</button>
-        </article>`;
-    }
-    else{
-        section.innerHTML=`<article class="individual-movie-poster"><div class="no-individual-poster" role="img" aria-label="No poster available for ${individualMovie.Title} movie">
-        🎬
-        </div></article>
-        <article class="movie-overview">
-                <h2>${individualMovie.Title}</h2>
-                <p>${individualMovie.Year} -⭐${individualMovie.imdbRating}</p>
-                <p> <span class="additional-detail-title"> Genre: </span> <br class='mobile-hide'> ${individualMovie.Genre} <br><br> 
-                <span class="additional-detail-title"> Director: </span> <br class='mobile-hide'>${individualMovie.Director} <br><br> 
-                <span class="additional-detail-title"> Release Date: </span> <br class='mobile-hide'> ${individualMovie.Released} <br><br>
-                <span class="additional-detail-title"> Runtime: </span> <br class='mobile-hide'> ${individualMovie.Runtime} <br><br>
-                <span class="additional-detail-title"> Awards: </span> <br class='mobile-hide'> ${individualMovie.Awards} <br><br>
-                <span class="additional-detail-title"> Cast: </span> <br class='mobile-hide'> ${individualMovie.Actors} </p>
-        
-            <p class="plot-text">Plot: ${individualMovie.Plot}</p>
-            <button id="toggle-fav">${favMessage}</button>
-        </article>`;
-    }
-
-    let favButton = document.getElementById('toggle-fav');
-
-    favButton.addEventListener("click", ()=>{
-        let id = individualMovie.imdbID;
-        if(favButton.innerText==="Add to Favourites"){
-            addToFavourite(id);
-            favButton.innerText="Remove from Favourites";
-        }
-        else{
-            removeFromFavourite(id);
-            favButton.innerText="Add to Favourites";
-        }
-    })
-        console.log("loadIndividualMovie executed");
-}
-
-//Page after searching a movie
-async function loadSearchResults(name) {
-goBackButton.style.display="inline";
-    console.log(name);
-    inputField.value = name;
-    document.title = `${name} - Results`;
-    try{
-    let Movie = await fetch(`https://www.omdbapi.com/?s=${name}&apikey=d18c11f9`); 
-    let movieList = await Movie.json();
-    let result = movieList.Response.toLowerCase();
-    result = result === 'true'
-    console.log("The movie was found?",result);
-    if(result) loadSearchResultsPage(movieList);  //loads movie names if searched
-    else{         //tells that no movie is found in the search rewsults
-        removeLoader();
-        loadNoResultPage();
-    }
-    }
-    catch(e){
-    console.log("Something went wrong: ",e);
-    }
-}
-
-function loadSearchResultsPage(movieList){
-    removeLoader();
-    console.log("ye loadSearchResultsPage function chal gaya");
-    const movieField=createSection(false);     //false bcz no fav page
-    movieList.Search.forEach((movie) => {
-        const movieCard = addMovieCard(movie,true);
-        movieField.appendChild(movieCard);
-    })
-    addArrowNavigation();
-    
-}
-
-function loadNoResultPage(){
-document.title="No Results Found - Movieflix"
-console.log("ye loadNoResultPage function chal gaya");
-const movieField=createSection(false);
-document.querySelector(".fav-movie-text").remove();
-movieField.innerHTML=`<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`
-}
-
-function removeLoader(){
-const load = document.getElementById("spinner");
-load.remove();
-}
-
-//favourites logic
-//called when favourites button is clicked
-function openFavourites(){
-    window.location.href = `?page=favourites`;
-    document.getElementById('fav-button').innerText="Home";
-}
-
-function removeFromFavourite(imdbID){
-console.log("Remove");
-favouriteMoviesID = favouriteMoviesID.filter(item => item !== imdbID);    //removes movie ID from favs
-localStorage.setItem(
-    "favourite",
-    JSON.stringify(favouriteMoviesID)
-);
-if(favouriteMoviesID.length===0){    //handling if there is no fav movie
-    const params = new URLSearchParams(document.location.search);
-    let page = params.get('page');
-    if(page==="favourites"){ 
-    document.querySelector(".fav-movie-text").remove();
-    loadNoResultPage();
-    }
-}
-}
-
-function addToFavourite(imdbID){
-    console.log("Add");
-    if (favouriteMoviesID.includes(imdbID)) { //if movie is already in favs, then no need to add it again
-        return;
-    } else {
-        favouriteMoviesID.push(imdbID);
-    }
-    //add in localstorage
-    localStorage.setItem(
-        "favourite",
-        JSON.stringify(favouriteMoviesID)
-    );
-    
-}
-
-//to load all the favourite movies of user
-async function loadFavouritesPage(){
-goBackButton.style.display="inline";
-    document.title="Favourites - Movieflix";
-    console.log("Favourites page loaded");
-
-    const movieField = createSection(true);   //true bcz it is favourites page
-    console.log(favouriteMoviesID.length);
-    if (favouriteMoviesID.length === 0) {      //if no fav movie present
-        movieField.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`;
-        removeLoader();
-        appendMovieField(movieField,true);    
-
-        document.querySelector(".fav-movie-text").remove();
-        return;
-    }
-    
-    //API calls when there are favourite movies
-    for (const movieID of favouriteMoviesID) {
-        
-        try{
-        const response =
-        await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
-        
-        const movie = await response.json();
-        
-        const movieCard = addMovieCard(movie, false);       //false bcz not searched
-        movieField.appendChild(movieCard);
-        }
-        catch(e){
-        console.log("Something went wrong",e);
-    }
-    }
-    removeLoader();
-    appendMovieField(movieField,true);
-    addArrowNavigation();
-    
-}
-
-//it appends the section creeated for all the movie cards
 function appendMovieField(movieField,favouritesPage){  //favouritesPage parameter helps user by changing the text to tell if the movie is added to fav page or removed from it
     const header = document.querySelector('#headers');
     const br = document.createElement('br');
@@ -1323,5 +940,5 @@ function appendMovieField(movieField,favouritesPage){  //favouritesPage paramete
     favLine.classList.add('fav-movie-text');
     if(!favouritesPage) favLine.innerText="Try to drag your Favourite Movie!";  
     else favLine.innerText="Drag a movie to remove it from Favourites!";
-    movieField.insertAdjacentElement("afterend",favLine);
+    movieField.insertAdjacentElement("afterend",favLine);  
 }

@@ -190,6 +190,11 @@ header nav{
     opacity: 0.6;
 }
 
+.rating-star{
+    color: #f9a132;
+    font-size: 1.4rem;
+}
+
 .image-container{
     display: flex;
     align-items: center;

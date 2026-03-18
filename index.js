@@ -960,18 +960,38 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
+                <p style="margin-top: 12px;">${movie.Year} - <span class="rating-star">☆</span> ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
-    
+
     }
     else{
     movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p>${movie.Year} - ⭐ ${movie.imdbRating}</p>
+                <p style="margin-top: 12px;">${movie.Year} - <span class="rating-star">☆</span> ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
+    } 
+
+    const favIcon = movieCard.querySelector(".rating-star");
+    if(!searched){
+      // console.log(favIcon);
+      if(favouriteMoviesID.includes(movie.imdbID)){
+          console.log(`${movie.Title} is added to favs`);
+          // favIcon.classList.add("favourited");
+          favIcon.innerText = "★";
+      }
+      favIcon.addEventListener("click", (e) => {
+          e.stopPropagation();      
+          if (favouriteMoviesID.includes(movie.imdbID)) {
+              removeFromFavourite(movie.imdbID);
+              favIcon.innerText = "☆";
+          } else {
+              addToFavourite(movie.imdbID);
+              favIcon.innerText = "★";
+          } 
+      });
     }
 
     movieCard.addEventListener("dragstart", (e) => {
