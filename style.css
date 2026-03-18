@@ -532,6 +532,10 @@ h2.searched-movie-details{
     .mobile-show{
         display: block;
     }
+    #fav-modal{
+        padding: 1rem;
+        padding-top: 2rem;
+    }
 }
 
 
