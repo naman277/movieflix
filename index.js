@@ -857,16 +857,30 @@ document.body.appendChild(dragPreview);
 favModal.id = "fav-modal";
 favModal.classList.add("modal-hidden");        
 favModal.innerHTML = `<div class="modal-content">
-  <span id="close-button">&times;</span>
-  <p id="modal-text">Do you want to add this movie to your favourites?</p>
-  <button class="modal-button" id="confirm-add">Yes</button>
-  <button class="modal-button" id="cancel-add">No</button>
+  <span tabindex="0" id="close-button" role="button" aria-label="Close Modal">&times;</span>
+  <p role="alert" aria-live="assertive" id="modal-text">Do you want to add this movie to your favourites?</p>
+  <button aria-label="Confirm" tabindex="0" class="modal-button" id="confirm-add">Yes</button>
+  <button aria-label="Cancel" tabindex="0" class="modal-button" id="cancel-add">No</button>
 </div>`;
 
 //event listener for close button of the modal
 favModal.querySelector("#close-button").addEventListener("click", () => {
   favModal.classList.add("modal-hidden");
   favModal.classList.remove("modal-show");
+  removeTrap?.();
+  lastFocused?.focus();
+});
+favModal.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    e.preventDefault();
+    favModal.querySelector("#close-button").click();  
+  }
+});
+favModal.querySelector("#close-button").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === "Space") {
+    e.preventDefault();
+    favModal.querySelector("#close-button").click();  
+  }
 });
 document.body.appendChild(favModal);
 
@@ -876,7 +890,7 @@ inputField.addEventListener("input", () => {
 });
 
 inputField.addEventListener('keypress',(event)=>{ //click event for search button when enter is pressed
-  if(event.key=== "Enter"){
+  if(event.key=== "Enter"  || event.key === "Space"){
     event.preventDefault();
     searchbutton.click();
   }
@@ -943,26 +957,35 @@ function removeMovieCard(id){
 
     if (card) {
         card.remove();
-    }}
+    }
+}
 
+
+let removeTrap;
+let lastFocused;
 //This function adds movie cards on the movie field section in homepage,search and favs
 function addMovieCard(movie,searched){   //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
+    const movieCardLink = document.createElement('a');
+    movieCardLink.href = `?movieID=${movie.imdbID}`;
     const movieCard = document.createElement('article');
     movieCard.classList.add('movie-card'); 
-    movieCard.style.cursor='pointer';
-    movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
-        window.location.href=`?movieID=${movie.imdbID}`;
-    })
-    movieCard.addEventListener('keypress',(event) =>{   //when a movie is focused using tab key, pressing enter redirects to the selected movie
-      if(event.key==="Enter"){
-        event.preventDefault();
-        movieCard.click();
-      }
-    })
-    movieCard.tabIndex=0;
+    movieCardLink.classList.add('movie-card-link'); 
+    movieCardLink.appendChild(movieCard);
+    // movieCard.style.cursor='pointer';
+    // movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
+    //     window.location.href=`?movieID=${movie.imdbID}`;
+    // })
+    // movieCard.addEventListener('keypress',(event) =>{   //when a movie is focused using tab key, pressing enter redirects to the selected movie
+    //   if(event.key==="Enter"){
+    //     event.preventDefault();
+    //     movieCard.click();
+    //   }
+    // })
+    // movieCard.tabIndex=0;
+    movieCardLink.draggable=false;
     movieCard.draggable=true;
-    movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
-    movieCard.setAttribute("role", "link");
+    movieCardLink.setAttribute("aria-label", `View details for ${movie.Title} movie`);
+    // movieCard.setAttribute("role", "article");
     movieCard.dataset.id = movie.imdbID;
 
     let posteralt = `${movie.Title} Movie Poster`;
@@ -998,19 +1021,39 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
           // favIcon.classList.add("favourited");
           favIcon.innerText = "★";
       }
+      favIcon.addEventListener("keydown",(event) =>{  
+        if(event.key==="Enter" || event.key === "Space"){
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          favIcon.click();
+        }
+      });
+
       favIcon.addEventListener("click", (e) => {
-          e.stopPropagation(); //to prevent the click event from propagating to the movie card which would redirect to the movie page. This way when the fav icon is clicked, only the fav modal is shown and it doesnt redirect to the movie page     
+        e.preventDefault();
+          e.stopPropagation(); //to prevent the click event from propagating to the movie card which would redirect to the movie page. This way when the fav icon is clicked, only the fav modal is shown and it doesnt redirect to the movie page
+          lastFocused = document.activeElement;
           if (favouriteMoviesID.includes(movie.imdbID)) {
               // removeFromFavourite(movie.imdbID);
               // favIcon.innerText = "☆";
               favModal.querySelector("#modal-text").innerText = `Do you want to remove ${movie.Title} from your favourites?`;
               favModal.classList.remove("modal-hidden");
               favModal.classList.add("modal-show");
+              let btn = favModal.querySelector("#close-button");
+              requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    btn.focus();
+  });
+});
+              removeTrap = trapFocus(favModal);              
               favModal.querySelector("#confirm-add").onclick = () => {
                 removeFromFavourite(movie.imdbID);
                 favIcon.innerText = "☆";
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
+                removeTrap?.();
+                lastFocused?.focus();
               if(window.location.search.includes("page=favourites")){
                 removeMovieCard(movie.imdbID);
               } // remove the movie card from fav page when removed from favourites
@@ -1019,6 +1062,8 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
               favModal.querySelector("#cancel-add").onclick = () => {
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
+                removeTrap?.();
+                lastFocused?.focus();
               };
           } 
           //when the movie is not in favourites and the fav icon is clicked, the modal is shown to confirm if the user wants to add the movie to favourites. If "yes" is clicked, the movie is added to favourites and if "no" is clicked, no changes are made to the favourites and the modal is hidden
@@ -1026,15 +1071,26 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
               favModal.querySelector("#modal-text").innerText = `Do you want to add ${movie.Title} to your favourites?`;
               favModal.classList.remove("modal-hidden");
               favModal.classList.add("modal-show");
+              let btn = favModal.querySelector("#close-button");
+              requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    btn.focus();
+  });
+});
+              removeTrap = trapFocus(favModal);
               favModal.querySelector("#confirm-add").onclick = () => {
                 addToFavourite(movie.imdbID);
                 favIcon.innerText = "★";
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
+                removeTrap?.();
+                lastFocused?.focus();
               } 
               favModal.querySelector("#cancel-add").onclick = () => {
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
+                removeTrap?.();
+                lastFocused?.focus();
               };
           } 
       });
@@ -1080,8 +1136,46 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
       };    
     }
 // =======================================================
-    return movieCard;
+    return movieCardLink;
 }
+
+function trapFocus(modal) {
+  const selectors =
+    "span, button";
+
+  const focusable = modal.querySelectorAll(selectors);
+
+  if (!focusable.length) return;
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  function handleKeydown(e) {
+    if (e.key !== "Tab") return;
+
+    if (e.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  modal.addEventListener("keydown", handleKeydown);
+
+  // return cleanup function (important)
+  return () => {
+    modal.removeEventListener("keydown", handleKeydown);
+  };
+}
+
 
 //Loads the home page after removing the loader
 function loadHomePage(){

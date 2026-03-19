@@ -226,20 +226,34 @@ header nav{
     box-shadow 0s ease-in, color 0s ease-in;
 }
 
-.movie-card:focus{
+.movie-card-link{
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.movie-card-link:focus{
     box-shadow: 0 0 15px 5px #3f4e67, 0 7px 7px #3f4e67; 
     transition: 
     box-shadow 0s ease-in, color 0s ease-in;
     outline: none;
 }
 
-.movie-card:active {
+/* .movie-card:active {
     opacity: 0.6;
-}
+} */
 
 .rating-star{
     color: #f9a132;
     font-size: 1.4rem;
+}
+
+.rating-star:hover{
+    text-shadow: 0 0 10px #f9a132, 0 0 20px #f9a132;
+}
+
+.rating-star:focus{
+    text-shadow: 0 0 10px #f9a132, 0 0 20px #f9a132;
+    outline: none;
 }
 
 .image-container{
@@ -375,6 +389,9 @@ h2.searched-movie-details{
     }
 
     .movie-card{
+        width: 100%;
+    }
+    .movie-card-link{
         width: 48%;
     }
     .movie-tiles-field{
@@ -472,12 +489,15 @@ h2.searched-movie-details{
     }
 
     .movie-card{
-        width:10rem;
+        width:100%;
         grid-template-columns: 1fr;
         grid-template-rows: 75% 25%;
         height: 20rem;
         row-gap: 0;
         
+    }
+    .movie-card-link{
+        width: 10rem;
     }
 
     
