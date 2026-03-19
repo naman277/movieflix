@@ -966,7 +966,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     let posteralt = `${movie.Title} Movie Poster`;
 
     let posterExists = URL.canParse(movie.Poster);
-    console.log(posterExists);
+    // console.log(posterExists);
 
     if(searched && posterExists){
       movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
@@ -1089,13 +1089,15 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     const img = movieCard.querySelector(".poster");
     const imageContainer = movieCard.querySelector(".image-container");
 
-    
-      img.onerror = () => {
+    //this will be executed only if poster URL is present but the image fails to load. If URL itself is not present, then also the same default image will be shown but without trying to load the image first
+      if(posterExists){
+        img.onerror = () => {
         img.remove();
         imageContainer.innerHTML = `
           <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
         `;
       };
+    }
     
     
 
