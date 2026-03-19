@@ -805,37 +805,38 @@ const movieapi = {
 }
 
 const favBtn = document.getElementById("fav-button");
-const dragHint = document.querySelector(".fav-movie-text");
-const dragPreview = document.createElement("div");
-const dropZone = document.createElement("div");
-const favModal = document.createElement("div");
+const dragHint = document.querySelector(".fav-movie-text");  //this is the text at below of the page which tells you to drag a movie
+const dragPreview = document.createElement("div");  //this is the preview which is shown when we drag a movie card
+const dropZone = document.createElement("div"); //this is the div which is shown when we drag a movie card and if we drop the card in that div, then the movie is added to/removed from favourites. This is shown only when a movie card is dragged
+const favModal = document.createElement("div");  //this is the popup which is shown when we click on the star button on a movie card. It asks for confirmation to add/remove the movie from favourites
 let inputField = document.getElementById("search");
 let searchbutton = document.getElementById('search-button');
 let goBackButton = document.querySelector(".go-back")
-let favouriteMoviesID = JSON.parse(localStorage.getItem("favourite")) || []; //storing movie names in localstorage
-
+let favouriteMoviesID = JSON.parse(localStorage.getItem("favourite")) || []; //storing movie imdbID in localstorage
 
 dropZone.id = "drag-drop-zone";
 dropZone.innerText = "Drop here to add to favourites";
 document.body.appendChild(dropZone);
 
 dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
+  e.preventDefault(); // Necessary to allow dropping as default is to not allow dropping
 });
+
 dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  const imdbID = e.dataTransfer.getData("text/plain");
-  const movieCard = document.querySelector(`.movie-card[data-id="${imdbID}"]`);
+  e.preventDefault(); 
+  const imdbID = e.dataTransfer.getData("text/plain"); // Get the dragged movie's IMDb ID, the "Text/plain" is the type of data (string) we set in dragstart event 
+  const movieCard = document.querySelector(`.movie-card[data-id="${imdbID}"]`); //selecting the movie card element which is dragged using the imdbID. This is required because we have to change the star button of that movie card when it is added to/removed from favourites
   // console.log(movieCard);
   if (favouriteMoviesID.includes(imdbID)) {
-    if(window.location.search.includes("page=favourites")){
+    if(window.location.search.includes("page=favourites")){ //if we are on favourites page, then the movie card is removed from the page when it is removed from favourites. If we are on homepage or search results page, then only the star button is changed to empty star
       removeMovieCard(imdbID);
     }
     removeFromFavourite(imdbID);
-    if(!window.location.search.includes("query=")){
+    if(!window.location.search.includes("query=")){ //when we are on search results page, the star button is not shown, so it should not be changed to empty star when a movie is removed from favourites. In other pages, the star button is shown and it should be changed to empty star when a movie is removed from favourites
       movieCard.querySelector(".rating-star").innerText = "☆"; // Change to empty star
       }
-  } else {
+  } 
+  else {
     addToFavourite(imdbID);
     if(!window.location.search.includes("query=")){
       movieCard.querySelector(".rating-star").innerText = "★"; // Change to filled star
@@ -854,7 +855,7 @@ dragPreview.style.left = "-1000px";
 document.body.appendChild(dragPreview);
 
 favModal.id = "fav-modal";
-favModal.classList.add("modal-hidden");       //change this to modal-hidden 
+favModal.classList.add("modal-hidden");        
 favModal.innerHTML = `<div class="modal-content">
   <span id="close-button">&times;</span>
   <p id="modal-text">Do you want to add this movie to your favourites?</p>
@@ -862,13 +863,14 @@ favModal.innerHTML = `<div class="modal-content">
   <button class="modal-button" id="cancel-add">No</button>
 </div>`;
 
+//event listener for close button of the modal
 favModal.querySelector("#close-button").addEventListener("click", () => {
   favModal.classList.add("modal-hidden");
   favModal.classList.remove("modal-show");
 });
 document.body.appendChild(favModal);
 
-//next 10 lines are making sure that the search functionality is disabled until something is written in the input field
+//making sure that the search functionality is disabled until something is written in the input field
 inputField.addEventListener("input", () => {
   searchbutton.disabled = inputField.value.trim() === "";
 });
@@ -879,16 +881,6 @@ inputField.addEventListener('keypress',(event)=>{ //click event for search butto
     searchbutton.click();
   }
 });
-
-function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
-    const inputField = document.getElementById("search");
-    let name = inputField.value;
-    name = name.trimStart();
-    name = name.replace(/\s+/g, ' ').trim();
-    name = name.replace(/\s+/g, '%20');
-    console.log(name); 
-    window.location.href = `?query=${name}`;
-}
 
 document.addEventListener("DOMContentLoaded",() => {   //always checks for the parameters in the URL
     const params = new URLSearchParams(document.location.search);
@@ -914,6 +906,16 @@ document.addEventListener("DOMContentLoaded",() => {   //always checks for the p
     }
 })
 
+function searchMovie(){  //executed whenn search button is clicked and also handles extra spaces in the search field
+    // const inputField = document.getElementById("search");
+    let name = inputField.value;
+    name = name.trimStart();
+    name = name.replace(/\s+/g, ' ').trim();
+    name = name.replace(/\s+/g, '%20');
+    console.log(name); 
+    window.location.href = `?query=${name}`;
+}
+
 //This function creates the movie tiles field where all the movie cards are displayed. This method is called on homepage/search results page/favourites page
 function createSection(favouritesPage){
     
@@ -923,7 +925,7 @@ function createSection(favouritesPage){
         appendMovieField(section,false);   //The false value is to tell that it is not favouritesPage. for favpage, it is not appended immediately
         
     }
-    if(favouritesPage){  //changes the favourites button to remove button
+    if(favouritesPage){  //changes the favourites button to Home button
       document.getElementById('fav-button').innerText="Home";
       document.getElementById('fav-button')
       .addEventListener("click", () => {
@@ -944,14 +946,14 @@ function removeMovieCard(id){
     }}
 
 //This function adds movie cards on the movie field section in homepage,search and favs
-function addMovieCard(movie,searched){             //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
+function addMovieCard(movie,searched){   //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
     const movieCard = document.createElement('article');
     movieCard.classList.add('movie-card'); 
     movieCard.style.cursor='pointer';
     movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
         window.location.href=`?movieID=${movie.imdbID}`;
     })
-    movieCard.addEventListener('keypress',(event) =>{   //when a movie is selected using tab key, pressing enter redirects to the selected movie
+    movieCard.addEventListener('keypress',(event) =>{   //when a movie is focused using tab key, pressing enter redirects to the selected movie
       if(event.key==="Enter"){
         event.preventDefault();
         movieCard.click();
@@ -959,7 +961,6 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     })
     movieCard.tabIndex=0;
     movieCard.draggable=true;
-    // movieCard.role="button";
     movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
     movieCard.dataset.id = movie.imdbID;
 
@@ -968,32 +969,16 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     let posterExists = URL.canParse(movie.Poster);
     // console.log(posterExists);
 
-    if(searched && posterExists){
-      movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+    //only executed if the movies are searched and the data received from the API is less. In that case, only the title, year and type of the movie is shown. On homepage and favs page, more details about the movie is shown like rating and plot because the data received from the API is more in those cases
+    if(searched){
+      movieCard.innerHTML=`<figure class="image-container"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
                 <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
             </div>`;
-    }
-    else if(searched && !posterExists){
-      movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
-</figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2> <br class="mobile-show"> <br>
-                <h2 class="searched-movie-details">${movie.Year} - ${movie.Type}</h2>         
-            </div>`;
-    }
-    else if(!posterExists){
-    movieCard.innerHTML=`<figure class="image-container"> <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div> </figure>
-            <div class="movie-details">
-                <h2>${movie.Title}</h2>
-                <p style="margin-top: 12px;">${movie.Year} - <span class="rating-star">☆</span> ${movie.imdbRating}</p>
-                <p class='card-plot'>${movie.Plot}</p>
-            </div>`;
-
     }
     else{
-    movieCard.innerHTML=`<figure class="image-container"><img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}"> </figure>
+    movieCard.innerHTML=`<figure class="image-container"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
                 <p style="margin-top: 12px;">${movie.Year} - <span class="rating-star">☆</span> ${movie.imdbRating}</p>
@@ -1002,15 +987,15 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     } 
 
     const favIcon = movieCard.querySelector(".rating-star");
+    //only executed when the movie card is created on homepage or favourites page because on search results page, we dont have the data to show the rating and also the fav icon. This is also important because the search results page can have a lot of movies and adding event listeners to all the fav icons will affect the performance of the page
     if(!searched){
-      // console.log(favIcon);
       if(favouriteMoviesID.includes(movie.imdbID)){
           // console.log(`${movie.Title} is added to favs`);
           // favIcon.classList.add("favourited");
           favIcon.innerText = "★";
       }
       favIcon.addEventListener("click", (e) => {
-          e.stopPropagation();      
+          e.stopPropagation(); //to prevent the click event from propagating to the movie card which would redirect to the movie page. This way when the fav icon is clicked, only the fav modal is shown and it doesnt redirect to the movie page     
           if (favouriteMoviesID.includes(movie.imdbID)) {
               // removeFromFavourite(movie.imdbID);
               // favIcon.innerText = "☆";
@@ -1026,11 +1011,14 @@ function addMovieCard(movie,searched){             //searched parameters tells i
                 removeMovieCard(movie.imdbID);
               } // remove the movie card from fav page when removed from favourites
               }
+              //when "no" button is clicked, the modal is hidden and no changes are made to the favourites
               favModal.querySelector("#cancel-add").onclick = () => {
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
               };
-          } else {
+          } 
+          //when the movie is not in favourites and the fav icon is clicked, the modal is shown to confirm if the user wants to add the movie to favourites. If "yes" is clicked, the movie is added to favourites and if "no" is clicked, no changes are made to the favourites and the modal is hidden
+          else {
               favModal.querySelector("#modal-text").innerText = `Do you want to add ${movie.Title} to your favourites?`;
               favModal.classList.remove("modal-hidden");
               favModal.classList.add("modal-show");
@@ -1043,9 +1031,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
               favModal.querySelector("#cancel-add").onclick = () => {
                 favModal.classList.add("modal-hidden");
                 favModal.classList.remove("modal-show");
-              }
-              // addToFavourite(movie.imdbID);
-              // favIcon.innerText = "★";
+              };
           } 
       });
     }
@@ -1055,11 +1041,6 @@ function addMovieCard(movie,searched){             //searched parameters tells i
         "text/plain",
         movie.imdbID
     );
-    // favBtn.classList.add("drag-active");
-    // dragHint.innerText = "Drop on Favourites to add ⭐";
-    // document.querySelector(".movie-tiles-field").classList.add("dragging");
-    // document.querySelector("#headers").classList.add("dragging");
-    // document.body.style.opacity=0.5;
     document.querySelector(".movie-tiles-field").style.opacity=0.5;
     document.querySelector("#headers").style.opacity=0.5;
     dropZone.classList.add("active");
@@ -1073,34 +1054,27 @@ function addMovieCard(movie,searched){             //searched parameters tells i
   });
   
   movieCard.addEventListener("dragend", () => {
-    // document.querySelector(".movie-tiles-field").classList.remove("dragging");
     document.querySelector(".movie-tiles-field").style.opacity=1;
     document.querySelector("#headers").style.opacity=1;
-    // document.querySelector("#headers").classList.remove("dragging");
-    
-    dropZone.classList.remove("active");
-    // document.body.style.opacity=1;
-
-    // favBtn.classList.remove("drag-active"); // remove highlight
-    // dragHint.innerText = "Drag your Favourite Movie towards Favourite Button!";
+    dropZone.classList.remove("active");    
 });
     // ==========================================================
-    //no poster image handling
-    const img = movieCard.querySelector(".poster");
+    //poster image handling
     const imageContainer = movieCard.querySelector(".image-container");
-
-    //this will be executed only if poster URL is present but the image fails to load. If URL itself is not present, then also the same default image will be shown but without trying to load the image first
-      if(posterExists){
+    //if poster URL is not present, then also the same default image will be shown but without trying to load the image first. This will avoid showing broken image icon in case of missing poster URL
+    if(!posterExists){
+      imageContainer.innerHTML = `  <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>`;  
+    }
+    //if poster URL is present, then try to load the image. If it fails to load due to any reason like broken URL or CORS issue, then also show the default image without showing broken image icon
+    else{
+      imageContainer.innerHTML = `<img draggable="false" class="poster" src="${movie.Poster}" alt="${posteralt}">`;
+      const img = imageContainer.querySelector(".poster");
+      //this error handling is added because some poster URLs are broken or have CORS issue and they show broken image icon which looks bad. So if the image fails to load, we replace it with the default image and remove the broken image icon
         img.onerror = () => {
         img.remove();
-        imageContainer.innerHTML = `
-          <div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>
-        `;
-      };
+        imageContainer.innerHTML = `<div class="no-poster" role="img" aria-label="No poster available for ${movie.Title} movie">🎬</div>`;
+      };    
     }
-    
-    
-
 // =======================================================
     return movieCard;
 }
@@ -1122,9 +1096,9 @@ function loadHomePage(){
 }
 
 function addArrowNavigation() {
-  const movieCards = [...document.querySelectorAll(".movie-card")];
+  const movieCards = [...document.querySelectorAll(".movie-card")]; //selecting all the movie cards on the page to add keyboard navigation using arrow keys
         // console.log(movieCards);
-        movieCards.forEach(item => {
+        movieCards.forEach(item => {    //adding event listener to each movie card to listen for keydown event when the card is focused and an arrow key is pressed
           item.addEventListener("keydown", e => {
             let direction = null;
 
@@ -1135,61 +1109,65 @@ function addArrowNavigation() {
 
             if (!direction) return;
 
-            const next = findNext(item, direction);
+            const next = findNext(item, direction);  //finding the next movie card in the direction of the arrow key pressed using the findNext function which calculates the distance of all the movie cards from the current card and returns the closest one in the direction of the arrow key pressed
             if (next) next.focus();
           });
         });
 }
 
 function findNext(current, direction) {
-  const currentRect = current.getBoundingClientRect();
-  let best = null;
-  let bestDistance = Infinity;
-  const movieCards = [...document.querySelectorAll(".movie-card")];
+  const currentRect = current.getBoundingClientRect(); //getting the position of the current movie card to calculate the distance of other movie cards from it and find the closest one in the direction of the arrow key pressed
+  let best = null;   //this variable will store the closest movie card in the direction of the arrow key pressed. It is initialized to null because if there is no movie card in that direction, then it will return null and the focus will not change
+  let bestDistance = Infinity;  //this variable will store the distance of the closest movie card in the direction of the arrow key pressed. It is initialized to infinity because we want to find the minimum distance and any distance will be less than infinity
+  const movieCards = [...document.querySelectorAll(".movie-card")]; //selecting all the movie cards on the page to calculate the distance of each card from the current card and find the closest one in the direction of the arrow key pressed
   movieCards.forEach(el => {
-    if (el === current) return;
+    if (el === current) return; //if the movie card is the current card, then we skip it because we want to find the next card in the direction of the arrow key pressed
 
-    const rect = el.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();  //getting the position of the movie card to calculate the distance from the current card and find the closest one in the direction of the arrow key pressed
 
-    const dx = rect.left - currentRect.left;
-    const dy = rect.top - currentRect.top;
+    const dx = rect.left - currentRect.left;  //calculating the horizontal distance of the movie card from the current card to find the closest one in the direction of the arrow key pressed
+    const dy = rect.top - currentRect.top;  //calculating the vertical distance of the movie card from the current card to find the closest one in the direction of the arrow key pressed
 
     const valid =
       (direction === "right" && dx > 0 && Math.abs(dy) < rect.height) ||
       (direction === "left" && dx < 0 && Math.abs(dy) < rect.height) ||
       (direction === "down" && dy > 0) ||
-      (direction === "up" && dy < 0);
+      (direction === "up" && dy < 0);     //checking if the movie card is in the direction of the arrow key pressed. For right and left arrow keys, we also check if the vertical distance is less than the height of the card to make sure that we are selecting the card which is in the same row as the current card. For up and down arrow keys, we dont need to check the horizontal distance because we want to select the closest card in that direction regardless of the row it is in
 
-    if (!valid) return;
+    if (!valid) return; //if the movie card is not in the direction of the arrow key pressed, then we skip it because we want to find the closest card in that direction
 
-    const distance = Math.hypot(dx, dy);
+    const distance = Math.hypot(dx, dy); //calculating the distance of the movie card from the current card using the Pythagorean theorem to find the closest one in the direction of the arrow key pressed
 
-    if (distance < bestDistance) {
+    if (distance < bestDistance) {  //if the distance of the movie card from the current card is less than the best distance found so far, then we update the best distance and the best card to this card because it is closer to the current card in the direction of the arrow key pressed
       bestDistance = distance;
       best = el;
     }
   });
 
-  return best;
+  return best; //returning the closest movie card in the direction of the arrow key pressed. If there is no card in that direction, then it will return null and the focus will not change
 }
 
 //for loading individual movies
 async function loadMoviePage(id) {
-  goBackButton.style.display="inline";
+  goBackButton.style.display="inline"; //because go back button is hidden on homepage but it should be shown on individual movie page to allow users to go back to the previous page
     try{
       let Movie = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=d18c11f9`);
-  
       let individualMovie = await Movie.json();
+      if (individualMovie.Response === "False") {
+        throw new Error(individualMovie.Error);
+      }
+      LoadIndivualMovie(individualMovie,false);
       console.log("loadMoviePage executed");
-      LoadIndivualMovie(individualMovie);
     }
-    catch(e){
+    catch(e){ //error handling in case the API fails to fetch the movie details for any reason like network error or invalid API key. In that case, we can show an error message to the user and redirect them to the homepage or search results page
       console.log("Couldn't Load Movie: ",e);
+      LoadIndivualMovie("",true); //we are passing true to the LoadIndividualMovie function to tell that there is an error in loading the movie details. Based on this, the function will show an error message to the user instead of the movie details
+      // history.back(); 
       
     }
 }
 
-function LoadIndivualMovie(individualMovie){
+function LoadIndivualMovie(individualMovie,hasError){
   document.title = `${individualMovie.Title} - Movieflix`
     removeLoader();
     const section = document.createElement('section');
@@ -1198,8 +1176,12 @@ function LoadIndivualMovie(individualMovie){
     const header = document.getElementById('headers');
     header.insertAdjacentElement('afterend',section);
     header.insertAdjacentElement('afterend',br);
+    if(hasError){
+      document.title = `Error in loading - Movieflix`
+      section.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found" style="font-size: 3rem;">Couldn't load details for this movie due to some technical error.</h2></article>`;
+      return;
+    }
     let favMessage;
-    
     //add to fav or remove from fav button accordingly if it is in fav or not
         if (favouriteMoviesID.includes(individualMovie.imdbID)) {               
         favMessage="Remove from Favourites";
@@ -1246,7 +1228,6 @@ function LoadIndivualMovie(individualMovie){
       }
 
     let favButton = document.getElementById('toggle-fav');
-
     favButton.addEventListener("click", ()=>{
         let id = individualMovie.imdbID;
         if(favButton.innerText==="Add to Favourites"){
@@ -1257,12 +1238,12 @@ function LoadIndivualMovie(individualMovie){
             removeFromFavourite(id);
             favButton.innerText="Add to Favourites";
         }
-    })
+    });
 
  //image handling
+    if(posterExists){
       const img = section.querySelector("img");
-    const imageContainer = section.querySelector(".individual-movie-poster");
-
+      const imageContainer = section.querySelector(".individual-movie-poster");
       img.onerror = () => {
         img.remove();
         imageContainer.innerHTML = `
@@ -1271,8 +1252,8 @@ function LoadIndivualMovie(individualMovie){
         </div>
         `;
       };
-    
-        console.log("loadIndividualMovie executed");
+    }
+    console.log("loadIndividualMovie executed");
 }
 
 //Page after searching a movie
@@ -1288,13 +1269,13 @@ async function loadSearchResults(name) {
       result = result === 'true'
       console.log("The movie was found?",result);
       if(result) loadSearchResultsPage(movieList);  //loads movie names if searched
-      else{         //tells that no movie is found in the search rewsults
-        removeLoader();
-        loadNoResultPage();
+      else{         //throws error if movie is not found or any other error occurs during searching and the error is caught in the catch block to show appropriate message to the user
+        throw new Error(movieList.Error);
       }
     }
     catch(e){
       console.log("Something went wrong: ",e);
+      loadNoResultPage(e);
     }
 }
 
@@ -1303,19 +1284,20 @@ function loadSearchResultsPage(movieList){
     console.log("loadSearchResultsPage function executed");
     const movieField=createSection(false);     //false bcz no fav page
     movieList.Search.forEach((movie) => {
-        const movieCard = addMovieCard(movie,true);
+        const movieCard = addMovieCard(movie,true); //true because it is searched movie and we have less data about the movie in that case so we want to show only few details about the movie
         movieField.appendChild(movieCard);
     })
     addArrowNavigation();
-    
 }
 
-function loadNoResultPage(){
+function loadNoResultPage(e){
+  removeLoader();
   document.title="No Results Found - Movieflix"
   console.log("loadNoResultPage function executed");
   const movieField=createSection(false);
   document.querySelector(".fav-movie-text").remove();
-  movieField.innerHTML=`<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`
+  let displayText=e.message.includes("Movie not found")? "No movie found!": "Movie couldn't be searched due to some technical error!";
+  movieField.innerHTML=`<article class="no-movie-div"><h2 class="no-movie-found">${displayText}</h2></article>`
 }
 
 function removeLoader(){
@@ -1331,7 +1313,7 @@ function openFavourites(){
 }
 
 function removeFromFavourite(imdbID){
-  console.log("Remove");
+  console.log("Removed from favourites");
   favouriteMoviesID = favouriteMoviesID.filter(item => item !== imdbID);    //removes movie ID from favs
   localStorage.setItem(
       "favourite",
@@ -1342,13 +1324,13 @@ function removeFromFavourite(imdbID){
     let page = params.get('page');
     if(page==="favourites"){ 
     document.querySelector(".fav-movie-text").remove();
-    loadNoResultPage();
+    document.querySelector(".movie-tiles-field").innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found" style="font-size: 3rem;">No movie left in favourites.</h2></article>`;
     }
   }
 }
 
 function addToFavourite(imdbID){
-    console.log("Add");
+    console.log("Added to favourites");
     if (favouriteMoviesID.includes(imdbID)) { //if movie is already in favs, then no need to add it again
         return;
     } else {
@@ -1371,10 +1353,9 @@ async function loadFavouritesPage(){
     const movieField = createSection(true);   //true bcz it is favourites page
     console.log(favouriteMoviesID.length);
     if (favouriteMoviesID.length === 0) {      //if no fav movie present
-        movieField.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found">No movie found!</h2></article>`;
+        movieField.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found" style="font-size: 3rem;">No movie left in favourites.</h2></article>`;
         removeLoader();
         appendMovieField(movieField,true);    
-
         document.querySelector(".fav-movie-text").remove();
         return;
       }
@@ -1387,18 +1368,31 @@ async function loadFavouritesPage(){
           await fetch(`https://www.omdbapi.com/?i=${movieID}&apikey=d18c11f9`);
           
           const movie = await response.json();
+
+          if (movie.Response === "False") {
+            throw new Error(movie.Error);
+          }
           
           const movieCard = addMovieCard(movie, false);       //false bcz not searched
           movieField.appendChild(movieCard);
         }
         catch(e){
           console.log("Something went wrong",e);
+          movieField.innerHTML = `<article class="no-movie-div"><h2 class="no-movie-found" style="font-size: 3rem;">Favourite movies not displayed due to some technical error.</h2></article>`;
+          if(!e.message.includes("API")){ //if api fault, then we need not remove the movie from favs because it is not the fault of the movie data and it can be loaded successfully when there is no API issue. But if the error is not related to API, then it means that there is some issue with the movie data and it is better to remove that movie from favs to avoid showing error message every time when user opens favs page due to that movie
+            favouriteMoviesID = favouriteMoviesID.filter(item => item !== movieID);
+            localStorage.setItem("favourite", JSON.stringify(favouriteMoviesID));
+          }
+        removeLoader();
+        appendMovieField(movieField,true);    
+        document.querySelector(".fav-movie-text").remove();
+        return;
       }
     }
     removeLoader();
     appendMovieField(movieField,true);
     addArrowNavigation();
-    
+
 }
 
 //it appends the section creeated for all the movie cards
