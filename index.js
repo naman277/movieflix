@@ -1065,7 +1065,7 @@ function addMovieCard(movie,searched){             //searched parameters tells i
     dropZone.classList.add("active");
     dropZone.innerText = favouriteMoviesID.includes(movie.imdbID)? `Drop here to remove from Favourites`: `Drop here to Add to Favourites`;
     dragPreview.textContent =
-    favBtn.innerText === "Home"
+    favouriteMoviesID.includes(movie.imdbID)
     ? `Remove ${movie.Title} from Favourites`
     : `Add ${movie.Title} to Favourites`;
     
