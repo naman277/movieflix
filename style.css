@@ -252,7 +252,7 @@ header nav{
     padding: 0;
     position: absolute;
     cursor: pointer;
-    top: 40.5px;
+    top: 26%;
     left: 173px;
 }
 
@@ -556,8 +556,8 @@ h2.searched-movie-details{
     }
 
     .rating-star{
-        top: 271px;
-        left: 82px;
+        top: 85%;
+        left: 52%;
     }
 }
 
