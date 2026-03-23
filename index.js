@@ -956,7 +956,7 @@ function removeMovieCard(id){
     );
 
     if (card) {
-        card.remove();
+        card.parentElement.remove();
     }
 }
 
