@@ -833,13 +833,13 @@ dropZone.addEventListener("drop", (e) => {
     }
     removeFromFavourite(imdbID);
     if(!window.location.search.includes("query=")){ //when we are on search results page, the star button is not shown, so it should not be changed to empty star when a movie is removed from favourites. In other pages, the star button is shown and it should be changed to empty star when a movie is removed from favourites
-      movieCard.querySelector(".rating-star").innerText = "☆"; // Change to empty star
+      movieCard.parentElement.querySelector(".rating-star").innerText = "☆"; // Change to empty star
       }
   } 
   else {
     addToFavourite(imdbID);
     if(!window.location.search.includes("query=")){
-      movieCard.querySelector(".rating-star").innerText = "★"; // Change to filled star
+      movieCard.parentElement.querySelector(".rating-star").innerText = "★"; // Change to filled star
       }
   }
   dropZone.classList.remove("active");
@@ -965,26 +965,31 @@ let removeTrap;
 let lastFocused;
 //This function adds movie cards on the movie field section in homepage,search and favs
 function addMovieCard(movie,searched){   //searched parameters tells if the function is called on search page. This is important because when searchibng, api doesnt send much data about the movie and we can add only few details
-    const movieCardLink = document.createElement('a');
-    movieCardLink.href = `?movieID=${movie.imdbID}`;
-    const movieCard = document.createElement('article');
+    const movieCardLink = document.createElement('div');
+    // movieCardLink.href = `?movieID=${movie.imdbID}`;
+    const movieCard = document.createElement('div');
+    const starIcon = document.createElement("span");
+    starIcon.classList.add("rating-star");
+    starIcon.innerText = "☆";
     movieCard.classList.add('movie-card'); 
     movieCardLink.classList.add('movie-card-link'); 
     movieCardLink.appendChild(movieCard);
-    // movieCard.style.cursor='pointer';
-    // movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
-    //     window.location.href=`?movieID=${movie.imdbID}`;
-    // })
-    // movieCard.addEventListener('keypress',(event) =>{   //when a movie is focused using tab key, pressing enter redirects to the selected movie
-    //   if(event.key==="Enter"){
-    //     event.preventDefault();
-    //     movieCard.click();
-    //   }
-    // })
+    movieCard.tabIndex=0;
+    movieCard.setAttribute("role", "button");
+    movieCard.style.cursor='pointer';
+    movieCard.addEventListener('click', function(){         //redirects to the detailed movie page when a movie is clicked
+        window.location.href=`?movieID=${movie.imdbID}`;
+    })
+    movieCard.addEventListener('keypress',(event) =>{   //when a movie is focused using tab key, pressing enter redirects to the selected movie
+      if(event.key==="Enter"){
+        event.preventDefault();
+        movieCard.click();
+      }
+    })
     // movieCard.tabIndex=0;
     movieCardLink.draggable=false;
     movieCard.draggable=true;
-    movieCardLink.setAttribute("aria-label", `View details for ${movie.Title} movie`);
+    movieCard.setAttribute("aria-label", `View details for ${movie.Title} movie`);
     // movieCard.setAttribute("role", "article");
     movieCard.dataset.id = movie.imdbID;
 
@@ -1005,17 +1010,17 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
     movieCard.innerHTML=`<figure class="image-container"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p style="margin-top: 12px;">${movie.Year} - <button class="rating-star">☆</button> ${movie.imdbRating}</p>
+                <p style="margin-top: 12px;">${movie.Year} -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     } 
-
-    const favIcon = movieCard.querySelector(".rating-star");
+    movieCardLink.appendChild(starIcon);
+    const favIcon = movieCardLink.querySelector(".rating-star");
     //only executed when the movie card is created on homepage or favourites page because on search results page, we dont have the data to show the rating and also the fav icon. This is also important because the search results page can have a lot of movies and adding event listeners to all the fav icons will affect the performance of the page
     if(!searched){
-      // favIcon.setAttribute("role", "button");
+      favIcon.setAttribute("role", "button");
       favIcon.setAttribute("aria-label", `Add or remove ${movie.Title} to favourites`);
-      // favIcon.tabIndex=0;
+      favIcon.tabIndex=0;
       if(favouriteMoviesID.includes(movie.imdbID)){
           // console.log(`${movie.Title} is added to favs`);
           // favIcon.classList.add("favourited");

@@ -230,9 +230,10 @@ header nav{
     text-decoration: none;
     border-radius: 10px;
     width: 100%;
+    position: relative;
 }
 
-.movie-card-link:focus{
+.movie-card:focus{
     box-shadow: 0 0 15px 5px #3f4e67, 0 7px 7px #3f4e67; 
     transition: 
     box-shadow 0s ease-in, color 0s ease-in;
@@ -249,7 +250,10 @@ header nav{
     background-color: transparent;
     border: 0;
     padding: 0;
+    position: absolute;
     cursor: pointer;
+    top: 40.5px;
+    left: 173px;
 }
 
 .rating-star:hover{
@@ -385,6 +389,7 @@ h2.searched-movie-details{
     background-color: #0e3e96;
 }
 
+
 /* 768px to 1024px */
 @media (min-width :768px) {
 
@@ -447,6 +452,8 @@ h2.searched-movie-details{
     .plot-text{
         padding: 0;
     }
+
+    
     
 }
 
@@ -546,6 +553,11 @@ h2.searched-movie-details{
     }
     .plot-text{
         font-size: larger;
+    }
+
+    .rating-star{
+        top: 271px;
+        left: 82px;
     }
 }
 
