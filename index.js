@@ -1005,7 +1005,7 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
     movieCard.innerHTML=`<figure class="image-container"> </figure>
             <div class="movie-details">
                 <h2>${movie.Title}</h2>
-                <p style="margin-top: 12px;">${movie.Year} - <span class="rating-star">☆</span> ${movie.imdbRating}</p>
+                <p style="margin-top: 12px;">${movie.Year} - <button class="rating-star">☆</button> ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
     } 
@@ -1013,9 +1013,9 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
     const favIcon = movieCard.querySelector(".rating-star");
     //only executed when the movie card is created on homepage or favourites page because on search results page, we dont have the data to show the rating and also the fav icon. This is also important because the search results page can have a lot of movies and adding event listeners to all the fav icons will affect the performance of the page
     if(!searched){
-      favIcon.setAttribute("role", "button");
+      // favIcon.setAttribute("role", "button");
       favIcon.setAttribute("aria-label", `Add or remove ${movie.Title} to favourites`);
-      favIcon.tabIndex=0;
+      // favIcon.tabIndex=0;
       if(favouriteMoviesID.includes(movie.imdbID)){
           // console.log(`${movie.Title} is added to favs`);
           // favIcon.classList.add("favourited");

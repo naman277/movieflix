@@ -246,6 +246,10 @@ header nav{
 .rating-star{
     color: #f9a132;
     font-size: 1.4rem;
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
 }
 
 .rating-star:hover{
