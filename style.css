@@ -229,6 +229,7 @@ header nav{
 .movie-card-link{
     text-decoration: none;
     border-radius: 10px;
+    width: 100%;
 }
 
 .movie-card-link:focus{
