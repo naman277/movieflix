@@ -1013,8 +1013,8 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
                 <p style="margin-top: 12px;">${movie.Year} -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${movie.imdbRating}</p>
                 <p class='card-plot'>${movie.Plot}</p>
             </div>`;
+            movieCardLink.appendChild(starIcon);
     } 
-    movieCardLink.appendChild(starIcon);
     const favIcon = movieCardLink.querySelector(".rating-star");
     //only executed when the movie card is created on homepage or favourites page because on search results page, we dont have the data to show the rating and also the fav icon. This is also important because the search results page can have a lot of movies and adding event listeners to all the fav icons will affect the performance of the page
     if(!searched){
@@ -1028,7 +1028,7 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
       }
       favIcon.addEventListener("keydown",(event) =>{  
         if(event.key==="Enter" || event.key === "Space"){
-          event.stopPropagation();
+          // event.stopPropagation();
           event.stopImmediatePropagation();
           event.preventDefault();
           favIcon.click();
@@ -1037,7 +1037,7 @@ function addMovieCard(movie,searched){   //searched parameters tells if the func
 
       favIcon.addEventListener("click", (e) => {
         e.preventDefault();
-          e.stopPropagation(); //to prevent the click event from propagating to the movie card which would redirect to the movie page. This way when the fav icon is clicked, only the fav modal is shown and it doesnt redirect to the movie page
+          // e.stopPropagation(); //to prevent the click event from propagating to the movie card which would redirect to the movie page. This way when the fav icon is clicked, only the fav modal is shown and it doesnt redirect to the movie page
           lastFocused = document.activeElement;
           if (favouriteMoviesID.includes(movie.imdbID)) {
               // removeFromFavourite(movie.imdbID);
@@ -1204,7 +1204,6 @@ function addArrowNavigation() {
         movieCards.forEach(item => {    //adding event listener to each movie card to listen for keydown event when the card is focused and an arrow key is pressed
           item.addEventListener("keydown", e => {
             let direction = null;
-
             if (e.key === "ArrowRight") direction = "right";
             if (e.key === "ArrowLeft") direction = "left";
             if (e.key === "ArrowDown") direction = "down";
