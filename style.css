@@ -322,6 +322,7 @@ header nav{
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    padding-right: 5px;
 }
 
 .fav-movie-text{
