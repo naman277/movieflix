@@ -969,6 +969,7 @@ function addMovieCard(movie,searched){
 // =======================================================
     return movieCard;
 }
+console.log("change in thor branch");
 
 function loadHomePage(){
     setTimeout(function(){
